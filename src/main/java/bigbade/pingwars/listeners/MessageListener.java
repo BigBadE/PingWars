@@ -1,0 +1,61 @@
+package bigbade.pingwars.listeners;
+
+import bigbade.pingwars.PingWars;
+import bigbade.pingwars.api.CommandBase;
+import bigbade.pingwars.api.PermissionLevel;
+import bigbade.pingwars.util.GuildConfig;
+import bigbade.pingwars.util.PingPlayer;
+import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
+
+public class MessageListener extends ListenerAdapter {
+    private PingWars main;
+
+    public MessageListener(PingWars main) { this.main = main; }
+
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        if (event.getAuthor().isBot()) return;
+        String message = event.getMessage().getContentRaw();
+        if (message == null) return;
+        if (message.length() >= main.prefix.length()) {
+            if (message.substring(0, main.prefix.length()).equalsIgnoreCase(main.prefix)) {
+                GuildConfig config = main.getFileHelper().loadGuild(event.getGuild());
+                String name = message.substring(main.prefix.length()).split(" ")[0];
+                //Useless if statement so the label will encompass the return.
+                channelCheck:
+                if (config.getCommandChannels() != null) {
+                    System.out.println("Good");
+                    for (Channel channel : config.getCommandChannels()) {
+                        if (event.getChannel().equals(channel))
+                            break channelCheck;
+                    }
+                    return;
+                }
+                for (CommandBase command : main.commands)
+                    for (String alias : command.getAliases())
+                        if (name.equalsIgnoreCase(alias)) {
+                            if (PermissionLevel.getLevel(event.getMember()).ordinal() >= command.getPerm().ordinal())
+                                command.onCommand(event, message.split(" "));
+                            else
+                                event.getChannel().sendMessage("You do not have permission to run that command!").queue();
+                            return;
+                        }
+            }
+        } else {
+            String[] mentions = message.split("<@");
+            if (mentions.length > 0) {
+                PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());
+                for (String mention : mentions) {
+                    String id = mention.split(">")[0];
+                    if(id.equals(main.shards.get(0).getSelfUser().getId())) continue;
+                    try {
+                        main.getFileHelper().loadPlayer(event.getGuild().getMemberById(id)).addPings(-1);
+                        pingPlayer.addPings(1);
+                    } catch (IndexOutOfBoundsException ignored) { }
+                }
+            }
+        }
+    }
+}
