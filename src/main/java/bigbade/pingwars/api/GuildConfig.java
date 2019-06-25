@@ -1,5 +1,6 @@
-package bigbade.pingwars.util;
+package bigbade.pingwars.api;
 
+import bigbade.pingwars.util.ByteUtils;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 

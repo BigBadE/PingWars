@@ -4,8 +4,10 @@ import bigbade.pingwars.api.CommandBase;
 import bigbade.pingwars.api.Generator;
 import bigbade.pingwars.commands.*;
 import bigbade.pingwars.generators.WeakGenerator;
+import bigbade.pingwars.listeners.GuildJoinListener;
 import bigbade.pingwars.listeners.MessageListener;
 import bigbade.pingwars.storage.FlatFileHelper;
+import bigbade.pingwars.upgrades.Upgrade;
 import bigbade.pingwars.util.SimpleLogger;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -31,6 +33,8 @@ public class PingWars {
     public List<JDA> shards = new ArrayList<>();
     public List<CommandBase> commands = new ArrayList<>();
     public List<Generator> generators = new ArrayList<>();
+    public List<Upgrade> upgrades = new ArrayList<>();
+
     private FlatFileHelper fileHelper = new FlatFileHelper(this);
 
     public static final SimpleLogger LOGGER = new SimpleLogger();
@@ -76,6 +80,7 @@ public class PingWars {
         LOGGER.info("Building JDA");
         JDABuilder builder = new JDABuilder(AccountType.BOT).setToken(token);
         builder.addEventListener(new MessageListener(this));
+        builder.addEventListener(new GuildJoinListener(filepath));
         LOGGER.info("Starting " + shardAmt + " shard(s)");
         for (int i = 0; i < shardAmt; i++)
             try {
@@ -86,6 +91,7 @@ public class PingWars {
             }
         registerCommands();
         registerGenerators();
+        registerUpgrades();
     }
 
     public void stop() {
@@ -108,10 +114,15 @@ public class PingWars {
         commands.add(new InfoCommand(this));
         commands.add(new BuyCommand(this));
         commands.add(new ClaimCommand(this));
+        commands.add(new GuildCommand(this));
     }
 
     private void registerGenerators() {
         byte id = 0;
         generators.add(new WeakGenerator(id));
+    }
+
+    private void registerUpgrades() {
+
     }
 }

@@ -1,6 +1,6 @@
-package bigbade.pingwars.util;
+package bigbade.pingwars.api;
 
-import bigbade.pingwars.api.Generator;
+import bigbade.pingwars.util.ByteUtils;
 import net.dv8tion.jda.core.entities.Member;
 
 import java.util.HashMap;
@@ -15,16 +15,16 @@ public class PingPlayer {
     private long power;
     //Amount of BP
     private long bossPoints;
-    //Guild ID
-    private long guild;
     //Last time pings were claimed
     private long lastTime;
+    //Guild ID
+    private String guild;
     //The member
     private Member member;
     //HashMap of ID and amount of each generator
     private Map<Byte, Long> generators;
 
-    public PingPlayer(Member member, long pings, long power, long bossPoints, long guild, long lastTime, Map<Byte, Long> generators) {
+    public PingPlayer(Member member, long pings, long power, long bossPoints, String guild, long lastTime, Map<Byte, Long> generators) {
         this.pings = pings;
         this.power = power;
         this.bossPoints = bossPoints;
@@ -50,7 +50,7 @@ public class PingPlayer {
         return bossPoints;
     }
 
-    public long getGuild() {
+    public String getGuild() {
         return guild;
     }
 
@@ -83,7 +83,7 @@ public class PingPlayer {
         this.bossPoints = bossPoints;
     }
 
-    public void setGuild(long guild) {
+    public void setGuild(String guild) {
         this.guild = guild;
     }
 
@@ -122,7 +122,7 @@ public class PingPlayer {
         System.arraycopy(utils.longToBytes(pings), 0, data, 0, 8);
         System.arraycopy(utils.longToBytes(power), 0, data, 8, 8);
         System.arraycopy(utils.longToBytes(bossPoints), 0, data, 16, 8);
-        System.arraycopy(utils.longToBytes(guild), 0, data, 24, 8);
+        System.arraycopy(utils.longToBytes(Long.parseUnsignedLong(guild, 16)), 0, data, 24, 8);
         System.arraycopy(utils.longToBytes(lastTime), 0, data, 32, 8);
         int i = 40;
         for(byte generator : generators.keySet()) {
@@ -156,7 +156,7 @@ public class PingPlayer {
                 generators.put(id, amount);
             }
         }
-        return new PingPlayer(member, pings, power, bossPoints, guild, lastTime, generators);
+        return new PingPlayer(member, pings, power, bossPoints, Long.toHexString(guild), lastTime, generators);
     }
 
     public boolean equals(Object o) {

@@ -4,7 +4,7 @@ import bigbade.pingwars.PingWars;
 import bigbade.pingwars.api.CommandBase;
 import bigbade.pingwars.api.Generator;
 import bigbade.pingwars.api.PermissionLevel;
-import bigbade.pingwars.util.PingPlayer;
+import bigbade.pingwars.api.PingPlayer;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -64,11 +64,7 @@ public class BuyCommand extends CommandBase {
         for (int i = 0; i < Math.min(page * 5 + 5, main.generators.size()); i++) {
             Generator generator = main.generators.get(i);
             long amount;
-            try {
-                amount = pingPlayer.getGenerators().get(generator.getId());
-            } catch (NullPointerException ignored) {
-                amount = 0;
-            }
+            amount = pingPlayer.getGenerators().get(generator.getId());
             builder.addField(generator.getName(), generator.getDescription() + "\nPrice: " + generator.getPrice() + " Owned: " + amount, false);
         }
         return builder.build();

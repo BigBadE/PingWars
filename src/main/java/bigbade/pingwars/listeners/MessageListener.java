@@ -3,8 +3,8 @@ package bigbade.pingwars.listeners;
 import bigbade.pingwars.PingWars;
 import bigbade.pingwars.api.CommandBase;
 import bigbade.pingwars.api.PermissionLevel;
-import bigbade.pingwars.util.GuildConfig;
-import bigbade.pingwars.util.PingPlayer;
+import bigbade.pingwars.api.GuildConfig;
+import bigbade.pingwars.api.PingPlayer;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -23,7 +23,7 @@ public class MessageListener extends ListenerAdapter {
         if (message == null) return;
         if (message.length() >= main.prefix.length()) {
             if (message.substring(0, main.prefix.length()).equalsIgnoreCase(main.prefix)) {
-                GuildConfig config = main.getFileHelper().loadGuild(event.getGuild());
+                GuildConfig config = main.getFileHelper().loadGuildConfig(event.getGuild());
                 String name = message.substring(main.prefix.length()).split(" ")[0];
                 //Useless if statement so the label will encompass the return.
                 channelCheck:

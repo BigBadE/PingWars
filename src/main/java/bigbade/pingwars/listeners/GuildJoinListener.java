@@ -17,6 +17,7 @@ public class GuildJoinListener extends ListenerAdapter {
     public void onGuildJoin(GuildJoinEvent event) {
         try {
             Files.createDirectory(FileSystems.getDefault().getPath(filepath+"\\data\\"+event.getGuild().getId()));
+            Files.createDirectory(FileSystems.getDefault().getPath(filepath+"\\data\\"+event.getGuild().getId()+"\\guilds"));
         } catch (IOException e) {
             PingWars.LOGGER.error("Could not create folder for guild " + event.getGuild().getName());
         }

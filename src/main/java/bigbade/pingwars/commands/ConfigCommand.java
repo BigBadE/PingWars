@@ -3,7 +3,7 @@ package bigbade.pingwars.commands;
 import bigbade.pingwars.PingWars;
 import bigbade.pingwars.api.CommandBase;
 import bigbade.pingwars.api.PermissionLevel;
-import bigbade.pingwars.util.GuildConfig;
+import bigbade.pingwars.api.GuildConfig;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -20,7 +20,7 @@ public class ConfigCommand extends CommandBase {
     @Override
     public void onCommand(MessageReceivedEvent event, String[] args) {
         if (args.length == 1) {
-            GuildConfig config = main.getFileHelper().loadGuild(event.getGuild());
+            GuildConfig config = main.getFileHelper().loadGuildConfig(event.getGuild());
             String cmdChannel;
             if (config.getCommandChannels() == null) {
                 cmdChannel = "None";
@@ -40,7 +40,7 @@ public class ConfigCommand extends CommandBase {
                     event.getChannel().sendMessage(args[2] + " is not a recognised channel. Make sure you put a # and clicked on the channel name.").queue();
                     return;
                 }
-                main.getFileHelper().loadGuild(event.getGuild()).setPingChannel(event.getGuild().getTextChannelById(args[2].replace("<#", "").replace(">", "")));
+                main.getFileHelper().loadGuildConfig(event.getGuild()).setPingChannel(event.getGuild().getTextChannelById(args[2].replace("<#", "").replace(">", "")));
                 event.getChannel().sendMessage("Set ping channel!").queue();
             } else if (args[1].equalsIgnoreCase("commandchannel")) {
                 Channel[] commandChannels = new Channel[args.length - 2];
@@ -51,7 +51,7 @@ public class ConfigCommand extends CommandBase {
                     }
                     commandChannels[i - 2] = event.getGuild().getTextChannelById(args[i].replace("<#", "").replace(">", ""));
                 }
-                main.getFileHelper().loadGuild(event.getGuild()).setCommandChannels(commandChannels);
+                main.getFileHelper().loadGuildConfig(event.getGuild()).setCommandChannels(commandChannels);
                 event.getChannel().sendMessage("Set command channel(s)!").queue();
             }
         }
