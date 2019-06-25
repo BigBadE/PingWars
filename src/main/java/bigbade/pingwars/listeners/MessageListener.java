@@ -12,7 +12,9 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 public class MessageListener extends ListenerAdapter {
     private PingWars main;
 
-    public MessageListener(PingWars main) { this.main = main; }
+    public MessageListener(PingWars main) {
+        this.main = main;
+    }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -26,7 +28,6 @@ public class MessageListener extends ListenerAdapter {
                 //Useless if statement so the label will encompass the return.
                 channelCheck:
                 if (config.getCommandChannels() != null) {
-                    System.out.println("Good");
                     for (Channel channel : config.getCommandChannels()) {
                         if (event.getChannel().equals(channel))
                             break channelCheck;
@@ -36,25 +37,22 @@ public class MessageListener extends ListenerAdapter {
                 for (CommandBase command : main.commands)
                     for (String alias : command.getAliases())
                         if (name.equalsIgnoreCase(alias)) {
-                            if (PermissionLevel.getLevel(event.getMember()).ordinal() >= command.getPerm().ordinal())
+                            if (PermissionLevel.getLevel(event.getMember(), event.getChannel()).ordinal() <= command.getPerm().ordinal())
                                 command.onCommand(event, message.split(" "));
                             else
                                 event.getChannel().sendMessage("You do not have permission to run that command!").queue();
                             return;
                         }
             }
-        } else {
-            String[] mentions = message.split("<@");
-            if (mentions.length > 0) {
-                PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());
-                for (String mention : mentions) {
-                    String id = mention.split(">")[0];
-                    if(id.equals(main.shards.get(0).getSelfUser().getId())) continue;
-                    try {
-                        main.getFileHelper().loadPlayer(event.getGuild().getMemberById(id)).addPings(-1);
-                        pingPlayer.addPings(1);
-                    } catch (IndexOutOfBoundsException ignored) { }
-                }
+        }
+        String[] mentions = message.split("<@");
+        if (mentions.length > 0) {
+            PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());
+            for (int i = 1; i < mentions.length; i++) {
+                String id = mentions[i].split(">")[0];
+                if (id.equals(main.shards.get(0).getSelfUser().getId())) continue;
+                main.getFileHelper().loadPlayer(event.getGuild().getMemberById(id)).addPings(-1);
+                pingPlayer.addPings(1);
             }
         }
     }

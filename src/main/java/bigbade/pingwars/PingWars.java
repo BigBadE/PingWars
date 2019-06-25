@@ -1,19 +1,18 @@
 package bigbade.pingwars;
 
 import bigbade.pingwars.api.CommandBase;
-import bigbade.pingwars.commands.ConfigCommand;
-import bigbade.pingwars.commands.StopCommand;
+import bigbade.pingwars.api.Generator;
+import bigbade.pingwars.commands.*;
+import bigbade.pingwars.generators.WeakGenerator;
 import bigbade.pingwars.listeners.MessageListener;
 import bigbade.pingwars.storage.FlatFileHelper;
+import bigbade.pingwars.util.SimpleLogger;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.harawata.appdirs.AppDirsFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,10 +30,10 @@ public class PingWars {
 
     public List<JDA> shards = new ArrayList<>();
     public List<CommandBase> commands = new ArrayList<>();
-
+    public List<Generator> generators = new ArrayList<>();
     private FlatFileHelper fileHelper = new FlatFileHelper(this);
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(PingWars.class);
+    public static final SimpleLogger LOGGER = new SimpleLogger();
 
     public static void main(String[] args) {
         PingWars main = new PingWars();
@@ -62,22 +61,22 @@ public class PingWars {
 
     private void start() {
         if (token == null) {
-            LOGGER.error("No token is set!");
+            LOGGER.info("No token is set!");
             throw new IllegalArgumentException();
         }
         if (prefix == null) {
             LOGGER.info("No prefix is set!");
             prefix = "!";
         }
-        LOGGER.info("Setting up save dir");
+        LOGGER.info("Setting up save directory");
         Path dataDir = FileSystems.getDefault().getPath(filepath);
-        if(!Files.exists(dataDir))
-            if(!dataDir.toFile().mkdir())
+        if (!Files.exists(dataDir))
+            if (!dataDir.toFile().mkdirs() && !dataDir.toFile().mkdir())
                 LOGGER.error("Could not create data directory!");
         LOGGER.info("Building JDA");
         JDABuilder builder = new JDABuilder(AccountType.BOT).setToken(token);
         builder.addEventListener(new MessageListener(this));
-        LOGGER.info("Starting " + shardAmt + " shards");
+        LOGGER.info("Starting " + shardAmt + " shard(s)");
         for (int i = 0; i < shardAmt; i++)
             try {
                 shards.add(builder.useSharding(i, shardAmt).build());
@@ -86,11 +85,12 @@ public class PingWars {
                 System.exit(-1);
             }
         registerCommands();
+        registerGenerators();
     }
 
     public void stop() {
         LOGGER.info("Stopping shards");
-        for(JDA jda : shards)
+        for (JDA jda : shards)
             jda.shutdown();
         LOGGER.info("Saving cache");
         fileHelper.saveCache();
@@ -102,8 +102,16 @@ public class PingWars {
         return fileHelper;
     }
 
-    public void registerCommands() {
+    private void registerCommands() {
         commands.add(new ConfigCommand(this));
         commands.add(new StopCommand(this));
+        commands.add(new InfoCommand(this));
+        commands.add(new BuyCommand(this));
+        commands.add(new ClaimCommand(this));
+    }
+
+    private void registerGenerators() {
+        byte id = 0;
+        generators.add(new WeakGenerator(id));
     }
 }

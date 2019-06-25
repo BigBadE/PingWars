@@ -1,7 +1,9 @@
 package bigbade.pingwars.api;
 
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.MessageChannel;
 
 public enum PermissionLevel {
     ADMINISTRATOR(Permission.ADMINISTRATOR),
@@ -20,9 +22,11 @@ public enum PermissionLevel {
         return perm;
     }
 
-    public static PermissionLevel getLevel(Member member) {
+    public static PermissionLevel getLevel(Member member, MessageChannel channel) {
         for(PermissionLevel level : PermissionLevel.values()) {
-            if(level.perm != null && member.getPermissions().contains(level.perm)) return level;
+            for(Permission permission : member.getPermissions((Channel) channel))
+                if(permission == level.perm)
+                    return level;
         }
         return USER;
     }

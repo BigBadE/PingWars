@@ -1,5 +1,6 @@
 package bigbade.pingwars.util;
 
+import bigbade.pingwars.api.Generator;
 import net.dv8tion.jda.core.entities.Member;
 
 import java.util.HashMap;
@@ -53,6 +54,8 @@ public class PingPlayer {
         return guild;
     }
 
+    public Map<Byte, Long> getGenerators() { return generators; }
+
     //The Long is stored as unsigned (as you cannot have negative pings) so we have to convert it to a good looking number.
     public String getDisplayPings() {
         return Long.toUnsignedString(pings);
@@ -65,6 +68,8 @@ public class PingPlayer {
     public String getDisplayBP() {
         return Long.toUnsignedString(bossPoints);
     }
+
+    public Long getLastTime() { return getLastTime(); }
 
     public void setPings(long pings) {
         this.pings = pings;
@@ -84,6 +89,7 @@ public class PingPlayer {
 
     public void addPings(long add) {
         this.pings += add;
+        pings = Math.max(0, pings);
     }
 
     public void addPower(long add) {
@@ -94,38 +100,59 @@ public class PingPlayer {
         this.bossPoints += add;
     }
 
-    public boolean equals(Object o) {
-        return ((PingPlayer) o).getMember().equals(member);
+    public void addGenerator(Generator generator, long adding) {
+        long amount = generators.get(generator.getId());
+        if(amount == -1)
+            generators.put(generator.getId(), amount);
+        else
+            generators.replace(generator.getId(), amount+adding);
     }
 
     public byte[] save(ByteUtils utils) {
-        byte amount = 20;
-        amount += generators.size()*4;
+        int amount = 40;
+        amount += generators.size()*9;
         byte[] data = new byte[amount];
-        System.arraycopy(data, 0, utils.longToBytes(pings), 0, 4);
+        System.arraycopy(utils.longToBytes(pings), 0, data, 0, 8);
+        System.arraycopy(utils.longToBytes(power), 0, data, 8, 8);
+        System.arraycopy(utils.longToBytes(bossPoints), 0, data, 16, 8);
+        System.arraycopy(utils.longToBytes(guild), 0, data, 24, 8);
+        System.arraycopy(utils.longToBytes(lastTime), 0, data, 32, 8);
+        int i = 40;
+        for(byte generator : generators.keySet()) {
+            data[i+1] = generator;
+            System.arraycopy(utils.longToBytes(generators.get(generator)), 0, data, i+2, 8);
+            i+=9;
+        }
         return data;
     }
 
     public static PingPlayer loadPlayer(byte[] data, Member member, ByteUtils utils) {
-        byte[] byteData = new byte[4];
-        System.arraycopy(data, 0, byteData, 0, 4);
+        byte[] byteData = new byte[8];
+        System.arraycopy(data, 0, byteData, 0, 8);
         long pings = utils.bytesToLong(byteData);
-        System.arraycopy(data, 4, byteData, 0, 4);
+        System.arraycopy(data, 8, byteData, 0, 8);
         long power = utils.bytesToLong(byteData);
-        System.arraycopy(data, 8, byteData, 0, 4);
+        System.arraycopy(data, 16, byteData, 0, 8);
         long bossPoints = utils.bytesToLong(byteData);
-        System.arraycopy(data, 12, byteData, 0, 4);
+        System.arraycopy(data, 24, byteData, 0, 8);
         long guild = utils.bytesToLong(byteData);
-        System.arraycopy(data, 16, byteData, 0, 4);
+        System.arraycopy(data, 32, byteData, 0, 8);
         long lastTime = utils.bytesToLong(byteData);
-        int gens = data.length-20/5;
         Map<Byte, Long> generators = new HashMap<>();
-        for(int i = 0; i < gens; i++) {
-            int pos = 20+(i*5);
-            byte id = data[pos+1];
-            System.arraycopy(data, pos+2, byteData, 0, 4);
-            long amount = utils.bytesToLong(byteData);
+        if(data.length != 40) {
+            int gens = (data.length - 40) / 9;
+            for (int i = 0; i < gens; i++) {
+                int pos = 40 + (i * 9);
+                byte id = data[pos + 1];
+                System.arraycopy(data, pos + 2, byteData, 0, 8);
+                long amount = utils.bytesToLong(byteData);
+                generators.put(id, amount);
+            }
         }
         return new PingPlayer(member, pings, power, bossPoints, guild, lastTime, generators);
+    }
+
+    public boolean equals(Object o) {
+        return ((PingPlayer) o).getMember().equals(member);
     }
 }

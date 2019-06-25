@@ -25,10 +25,11 @@ public class FlatFileHelper {
 
     public FlatFileHelper(PingWars main) {this.main = main; }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     public PingPlayer loadPlayer(Member player) {
-        int index = cache.indexOf(player);
-        if(index != -1)
-            return cache.get(index);
+        for(PingPlayer pingPlayer : cache)
+            if(pingPlayer.getMember().equals(player))
+                return pingPlayer;
         if(cache.size() > 50)
             saveCache();
         Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\" + player.getGuild().getId() + "\\" + player.getUser().getId() + ".dat");
@@ -44,7 +45,7 @@ public class FlatFileHelper {
             cache.add(pingPlayer);
             return pingPlayer;
         }
-        PingPlayer pingPlayer = new PingPlayer(player, 0, 0, 0, 0, System.currentTimeMillis(), new HashMap<>());
+        PingPlayer pingPlayer = new PingPlayer(player, 0, 0, 0, -1, System.currentTimeMillis(), new HashMap<>());
         cache.add(pingPlayer);
         return pingPlayer;
     }
@@ -52,9 +53,10 @@ public class FlatFileHelper {
     //We know it's a guild, so we use it to check guilds in GuildConfig#equals
     @SuppressWarnings("EqualsBetweenInconvertibleTypes")
     public GuildConfig loadGuild(Guild guild) {
-        for(GuildConfig config : guilds)
-            if(config.equals(guilds))
+        for(GuildConfig config : guilds) {
+            if (config.equals(guild))
                 return config;
+        }
         if(guilds.size() > 50)
             saveCache();
         Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\" + guild.getId() + "\\config.dat");
@@ -70,7 +72,7 @@ public class FlatFileHelper {
             guilds.add(config);
             return config;
         }
-        GuildConfig config = new GuildConfig(null, null);
+        GuildConfig config = new GuildConfig(null, null, guild);
         guilds.add(config);
         return config;
     }
@@ -90,7 +92,7 @@ public class FlatFileHelper {
         }
         for(GuildConfig config : guilds) {
             try {
-                Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\" + config.getPingChannel().getGuild().getId() + "\\config.dat");
+                Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\" + config.getGuild().getId() + "\\config.dat");
                 if(!Files.exists(path))
                     if(!path.toFile().createNewFile())
                         PingWars.LOGGER.error("Could not create guild data file!");

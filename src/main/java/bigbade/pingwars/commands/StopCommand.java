@@ -7,11 +7,8 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class StopCommand extends CommandBase {
 
-    private PingWars main;
-
     public StopCommand(PingWars main) {
-        super("shutdown", new String[] { "shutdown"}, "Stop the bot", PermissionLevel.ADMINISTRATOR);
-        this.main = main;
+        super("shutdown", new String[] { "shutdown"}, "Stop the bot", PermissionLevel.ADMINISTRATOR, main);
     }
 
     @Override

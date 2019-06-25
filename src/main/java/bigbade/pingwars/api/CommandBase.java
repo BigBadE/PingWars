@@ -1,18 +1,21 @@
 package bigbade.pingwars.api;
 
+import bigbade.pingwars.PingWars;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public abstract class CommandBase {
-    String id;
-    String[] aliases;
-    String description;
-    PermissionLevel perm;
+    private String id;
+    private String[] aliases;
+    private String description;
+    private PermissionLevel perm;
+    protected PingWars main;
 
-    public CommandBase(String id, String[] aliases, String description, PermissionLevel perm) {
+    public CommandBase(String id, String[] aliases, String description, PermissionLevel perm, PingWars main) {
         this.id = id;
         this.aliases = aliases;
         this.description = description;
         this.perm = perm;
+        this.main = main;
     }
 
     public String getId() {
