@@ -69,7 +69,7 @@ public class PingPlayer {
         return Long.toUnsignedString(bossPoints);
     }
 
-    public Long getLastTime() { return getLastTime(); }
+    public Long getLastTime() { return lastTime; }
 
     public void setPings(long pings) {
         this.pings = pings;
@@ -87,6 +87,8 @@ public class PingPlayer {
         this.guild = guild;
     }
 
+    public void setLastTime(long lastTime) { this.lastTime = lastTime; }
+
     public void addPings(long add) {
         this.pings += add;
         pings = Math.max(0, pings);
@@ -101,9 +103,14 @@ public class PingPlayer {
     }
 
     public void addGenerator(Generator generator, long adding) {
-        long amount = generators.get(generator.getId());
-        if(amount == -1)
-            generators.put(generator.getId(), amount);
+        long amount;
+        try {
+            amount = generators.get(generator.getId());
+        } catch(NullPointerException ignored) {
+            amount = 0;
+        }
+        if(amount == 0)
+            generators.put(generator.getId(), adding);
         else
             generators.replace(generator.getId(), amount+adding);
     }
@@ -119,8 +126,8 @@ public class PingPlayer {
         System.arraycopy(utils.longToBytes(lastTime), 0, data, 32, 8);
         int i = 40;
         for(byte generator : generators.keySet()) {
-            data[i+1] = generator;
-            System.arraycopy(utils.longToBytes(generators.get(generator)), 0, data, i+2, 8);
+            data[i] = generator;
+            System.arraycopy(utils.longToBytes(generators.get(generator)), 0, data, i+1, 8);
             i+=9;
         }
         return data;
@@ -143,8 +150,8 @@ public class PingPlayer {
             int gens = (data.length - 40) / 9;
             for (int i = 0; i < gens; i++) {
                 int pos = 40 + (i * 9);
-                byte id = data[pos + 1];
-                System.arraycopy(data, pos + 2, byteData, 0, 8);
+                byte id = data[pos];
+                System.arraycopy(data, pos + 1, byteData, 0, 8);
                 long amount = utils.bytesToLong(byteData);
                 generators.put(id, amount);
             }

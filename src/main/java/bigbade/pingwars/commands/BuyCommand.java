@@ -32,17 +32,24 @@ public class BuyCommand extends CommandBase {
                 long adding = 1;
                 try {
                     adding = Long.parseUnsignedLong(args[args.length - 1]);
-                } catch (NumberFormatException ignored) { added = false; }
-                StringBuilder name = new StringBuilder(args[1]);
-                for(int i = 2; i < ((added) ? args.length : args.length-1); i++)
-                    name.append(args[i]);
+                } catch (NumberFormatException ignored) {
+                    added = false;
+                }
+                StringBuilder name = new StringBuilder(args[1] + " ");
+                for (int i = 2; i < ((added) ? args.length - 1 : args.length); i++)
+                    name.append(args[i]).append(" ");
+                name.deleteCharAt(name.length() - 1);
                 for (Generator repeatGenerator : main.generators)
                     if (repeatGenerator.getName().equalsIgnoreCase(name.toString()))
                         generator = repeatGenerator;
                 if (generator != null) {
-                    if (Long.compareUnsigned(pingPlayer.getPings(), generator.getPrice() * adding) <= 0) {
-                        pingPlayer.addPings(-generator.getPrice() * adding);
+                    if (Long.compareUnsigned(pingPlayer.getPings(), generator.getPrice() * adding) >= 0) {
+                        pingPlayer.addPings(-(generator.getPrice() * adding));
+                        pingPlayer.addPower(adding);
                         pingPlayer.addGenerator(generator, adding);
+                        event.getChannel().sendMessage("You have bought " + adding + " " + generator.getName() + ((added) ? "s" : "") + ".").queue();
+                    } else {
+                        event.getChannel().sendMessage("You do not have " + generator.getPrice()*adding + " pings.").queue();
                     }
                 } else
                     event.getChannel().sendMessage("There is no generator by the name of " + name.toString()).queue();
@@ -62,7 +69,7 @@ public class BuyCommand extends CommandBase {
             } catch (NullPointerException ignored) {
                 amount = 0;
             }
-            builder.addField(generator.getName(), generator.getDescription() + "\nPrice: " + generator.getPrice() + "\nOwned: " + amount, false);
+            builder.addField(generator.getName(), generator.getDescription() + "\nPrice: " + generator.getPrice() + " Owned: " + amount, false);
         }
         return builder.build();
     }

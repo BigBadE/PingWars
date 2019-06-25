@@ -29,6 +29,7 @@ public class ClaimCommand extends CommandBase {
             }
             redeem.addPings(redeemed);
             pingTarget.addPings(-redeemed);
+            redeem.setLastTime(System.currentTimeMillis());
             event.getChannel().sendMessage(event.getMember().getAsMention() + " pinged " + target.getAsMention() + " " + redeemed + " times.").queue();
         }
     }
