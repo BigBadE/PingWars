@@ -32,7 +32,8 @@ public class PingWars {
 
     public String filepath = AppDirsFactory.getInstance().getUserDataDir("PingBot", null, "Big_Bad_E");
 
-    public List<JDA> shards = new ArrayList<>();
+    private List<JDA> shards = new ArrayList<>();
+
     public List<CommandBase> commands = new ArrayList<>();
     public List<Generator> generators = new ArrayList<>();
     public List<Upgrade> upgrades = new ArrayList<>();
