@@ -6,6 +6,7 @@ import bigbade.pingwars.upgrades.Upgrade;
 import bigbade.pingwars.util.ByteUtils;
 import bigbade.pingwars.util.TimeUnit;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -17,6 +18,7 @@ public class PlayerGuild {
     private String war, name;
     private Set<Long> members, elders;
     private Map<Long, Long> warValues, attackValues;
+    private List<Member> invites = new ArrayList<>();
     private Guild guild;
     private long warTime;
 
@@ -59,6 +61,10 @@ public class PlayerGuild {
     public String getName() {
         return name;
     }
+
+    public boolean invited(Member member) { return invites.contains(member); }
+
+    public boolean isElder(Member member) { return elders.contains(member.getUser().getIdLong()); }
 
     public boolean hasUpgrade(byte upgrade) {
         return upgrades.get(upgrade);
@@ -109,8 +115,15 @@ public class PlayerGuild {
         points += add;
     }
 
-    public void promote(long id) {
-        elders.add(id);
+    public void invite(Member member) {
+        invites.add(member);
+    }
+
+    public void promote(long id, String rank) {
+        if(rank.equals("e"))
+            elders.add(id);
+        else
+            leader = id;
     }
 
     public void startWar(String enemy) {
