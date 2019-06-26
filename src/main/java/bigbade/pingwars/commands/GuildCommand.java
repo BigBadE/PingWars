@@ -18,7 +18,7 @@ public class GuildCommand extends CommandBase {
     @Override
     public void onCommand(MessageReceivedEvent event, String[] args) {
         if (args.length == 1)
-            event.getChannel().sendMessage(new EmbedBuilder().setColor(Color.GREEN).addField("Guild", "Create: Create a guild.\nJoin: Join a guild you were invited to.\nShop: Buy guild upgrades.\nWar: Command for guild wars.\nInfo: View guild stats.\nLeave: Leave your guild.\nInvite (Elder only: Invite a player\nWar (Owner only: Start a guild war.\nPromote (Owner only): Promote another member to Owner or Elder.\nDisband: Disband the guild.", false).build()).queue();
+            event.getChannel().sendMessage(new EmbedBuilder().setColor(Color.GREEN).addField("Guild", "Create (name): Create a guild.\nJoin (id): Join a guild you were invited to.\nShop: Buy guild upgrades.\nWar (guild): Command for guild wars.\nInfo (guild): View guild stats.\nMembers (guild): View members\nLeave: Leave your guild.\nInvite (name) (Elder only: Invite a player\nWar (ID) (Owner only): Start a guild war.\nPromote (Owner only): Promote another member to Owner or Elder.\nDisband: Disband the guild.", false).build()).queue();
         else {
             switch (args[1]) {
                 case "create":
@@ -100,7 +100,7 @@ public class GuildCommand extends CommandBase {
                     for (long member : guild.getMembers())
                         power += main.getFileHelper().loadPlayer(event.getGuild().getMemberById(member)).getPower();
                     Member leader = event.getGuild().getMemberById(guild.getLeader());
-                    event.getChannel().sendMessage(new EmbedBuilder().addField(guild.getName(), "GP: " + Long.toUnsignedString(guild.getPoints()) + "\nGP: " + Long.toUnsignedString(power) + "\nMembers: " + guild.getMembers().size() + "\nLeader: " + leader.getUser().getAsTag(), false).setColor(Color.GREEN).build()).queue();
+                    event.getChannel().sendMessage(new EmbedBuilder().addField(guild.getName(), "ID: " + guild.getId() + "\nGP: " + Long.toUnsignedString(guild.getPoints()) + "\nPower: " + Long.toUnsignedString(power) + "\nMembers: " + guild.getMembers().size() + "\nLeader: " + leader.getUser().getAsTag(), false).setColor(Color.GREEN).build()).queue();
                     break;
                 case "leave":
                     PingPlayer player = main.getFileHelper().loadPlayer(event.getMember());
@@ -133,24 +133,32 @@ public class GuildCommand extends CommandBase {
                 case "disband":
                     PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());
                     PlayerGuild playerGuild = main.getFileHelper().loadGuild(pingPlayer.getGuild(), event.getGuild(), null, null);
-                    if (playerGuild.getLeader() == event.getAuthor().getIdLong()) {
+                    if (playerGuild == null) {
+                        event.getChannel().sendMessage("Your save file was corrupted, it has been undone but please report what happened to Big_Bad_E.").queue();
+                        pingPlayer.setGuild(null);
+                    } else if (playerGuild.getLeader() == event.getAuthor().getIdLong()) {
                         for (long member : playerGuild.getMembers())
                             main.getFileHelper().loadPlayer(event.getGuild().getMemberById(member)).setGuild(null);
-                        main.getFileHelper().deleteGuild(playerGuild.getId());
+                        main.getFileHelper().deleteGuild(playerGuild.getId(), event.getGuild());
+                        event.getChannel().sendMessage("Disbanded guild!").queue();
                     }
+                    break;
                 case "invite":
                     if (args.length == 2)
                         event.getChannel().sendMessage("You must tag a player to invite them!").queue();
                     else {
-                        Member tagged = event.getGuild().getMemberById(args[1].replace("<@", "").replace(">", ""));
+                        Member tagged = event.getGuild().getMemberById(args[2].replace("<@", "").replace(">", ""));
                         if (tagged == null)
                             event.getChannel().sendMessage("Could not find player " + args[2]).queue();
                         else {
                             PlayerGuild guild2 = main.getFileHelper().loadGuild(main.getFileHelper().loadPlayer(event.getMember()).getGuild(), event.getGuild(), null, null);
                             PingPlayer pingPlayer1 = main.getFileHelper().loadPlayer(tagged);
-                            if(pingPlayer1.getGuild() == null) {
+                            if (pingPlayer1.getGuild() == null) {
                                 guild2.invite(tagged);
-                                tagged.getUser().openPrivateChannel().queue((privateChannel -> privateChannel.sendMessage(event.getMember().getEffectiveName() + " has invited you to join the guild " + guild2.getName() + ".\nType " + main.prefix + "guild join " + guild2.getId() + "in the server " + event.getGuild().getName() +" to accept the invite").queue()));
+                                tagged.getUser().openPrivateChannel().queue((privateChannel -> privateChannel.sendMessage(event.getMember().getEffectiveName() + " has invited you to join the guild " + guild2.getName() + ".\nType '''" + main.prefix + "guild join " + guild2.getId() + "''' in the server " + event.getGuild().getName() + " to accept the invite.\nTHIS INVITE IS TEMPORARY, IT MAY EXPIRE.").queue()));
+                                event.getChannel().sendMessage("Invited player!").queue();
+                            } else {
+                                event.getChannel().sendMessage("The player is already in a guild!").queue();
                             }
                         }
                     }
@@ -160,19 +168,33 @@ public class GuildCommand extends CommandBase {
                         event.getChannel().sendMessage("You must include a guild ID!\nUsage: " + main.prefix + "guild join (id)").queue();
                     else {
                         PlayerGuild guild2 = main.getFileHelper().loadGuild(args[2], event.getGuild(), null, null);
-                        if(guild2.invited(event.getMember())) {
-                            PingPlayer player1 = main.getFileHelper().loadPlayer(event.getMember());
-                            if(player1.getGuild() == null) {
-                                player1.setGuild(guild2.getId());
-                                guild2.addMember(event.getMember().getUser().getIdLong());
-                                event.getChannel().sendMessage("You have joined " + guild2.getName() + "!").queue();
+                        if (guild2 != null)
+                            if (guild2.invited(event.getMember())) {
+                                PingPlayer player1 = main.getFileHelper().loadPlayer(event.getMember());
+                                if (player1.getGuild() == null) {
+                                    player1.setGuild(guild2.getId());
+                                    guild2.addMember(event.getMember().getUser().getIdLong());
+                                    guild2.removeInvite(event.getMember());
+                                    event.getChannel().sendMessage("You have joined " + guild2.getName() + "!").queue();
+                                } else {
+                                    event.getChannel().sendMessage("You are already in a guild!").queue();
+                                }
                             } else {
-                                event.getChannel().sendMessage("You are already in a guild!").queue();
+                                event.getChannel().sendMessage("You are not invited to the guild " + guild2.getName()).queue();
                             }
-                        } else {
-                            event.getChannel().sendMessage("You are not invited to the guild " + guild2.getName()).queue();
-                        }
+                        else
+                            event.getChannel().sendMessage("That guild does not exist!").queue();
                     }
+                    break;
+                case "members":
+                    PlayerGuild guild2 = main.getFileHelper().loadGuild(main.getFileHelper().loadPlayer(event.getMember()).getGuild(), event.getGuild(), null, null);
+                    StringBuilder members = new StringBuilder();
+                    for (long member : guild2.getMembers()) {
+                        Member member1 = event.getGuild().getMemberById(member);
+                        members.append(member1.getUser().getAsTag()).append(" : ").append(member1.getEffectiveName()).append("\n");
+                    }
+                    event.getChannel().sendMessage(new EmbedBuilder().setColor(Color.GREEN)
+                            .addField(guild2.getName(), members.toString(), false).build()).queue();
             }
         }
     }

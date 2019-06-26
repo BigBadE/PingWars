@@ -8,7 +8,6 @@ import bigbade.pingwars.util.TimeUnit;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
-import java.nio.ByteBuffer;
 import java.util.*;
 
 public class PlayerGuild {
@@ -71,7 +70,9 @@ public class PlayerGuild {
     }
 
     public void addMember(long id) {
-        this.members.add(id);
+        System.out.println("Added to " + this);
+        members.add(id);
+        System.out.println(members.size());
     }
 
     public long warScore() {
@@ -119,6 +120,10 @@ public class PlayerGuild {
         invites.add(member);
     }
 
+    public void removeInvite(Member member) {
+        invites.remove(member);
+    }
+
     public void promote(long id, String rank) {
         if(rank.equals("e"))
             elders.add(id);
@@ -138,6 +143,7 @@ public class PlayerGuild {
     }
 
     public static PlayerGuild load(byte[] data, ByteUtils utils, PingWars main, Guild guild) {
+        StringBuilder builder = new StringBuilder();
         byte[] byteData = new byte[8];
         System.arraycopy(data, 0, byteData, 0, 8);
         long id = utils.bytesToLong(byteData);
@@ -152,7 +158,7 @@ public class PlayerGuild {
             i++;
         }
         System.arraycopy(data, i, byteData, 0, 8);
-        String war = new String(byteData);
+        String war = Long.toHexString(utils.bytesToLong(byteData));
         if (war.equals("7fffffffffffffff")) war = null;
         i += 8;
         byte[] tempData = new byte[16];
@@ -165,7 +171,7 @@ public class PlayerGuild {
         System.arraycopy(tempData, 0, nameBytes, 0, length);
         String name = new String(nameBytes);
         Set<Long> members = new HashSet<>();
-        i += 24;
+        i += 16;
         while (true) {
             System.arraycopy(data, i, byteData, 0, 8);
             long member = utils.bytesToLong(byteData);
@@ -173,6 +179,7 @@ public class PlayerGuild {
                 i += 8;
                 break;
             } else {
+                System.out.println("Found");
                 members.add(member);
                 i += 8;
             }
@@ -214,10 +221,6 @@ public class PlayerGuild {
             System.arraycopy(utils.longToBytes(elder), 0, data, i, 8);
             i += 8;
         }
-        StringBuilder builder = new StringBuilder();
-        for(byte byze : data)
-            builder.append(byze).append(" ");
-        System.out.println(builder);
         return data;
     }
 
