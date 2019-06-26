@@ -3,6 +3,8 @@ package bigbade.pingwars;
 import bigbade.pingwars.api.CommandBase;
 import bigbade.pingwars.api.Generator;
 import bigbade.pingwars.commands.*;
+import bigbade.pingwars.generators.StrongGenerator;
+import bigbade.pingwars.generators.Tier3Generator;
 import bigbade.pingwars.generators.WeakGenerator;
 import bigbade.pingwars.listeners.GuildJoinListener;
 import bigbade.pingwars.listeners.MessageListener;
@@ -120,6 +122,10 @@ public class PingWars {
     private void registerGenerators() {
         byte id = 0;
         generators.add(new WeakGenerator(id));
+        id++;
+        generators.add(new StrongGenerator(id));
+        id++;
+        generators.add(new Tier3Generator(id));
     }
 
     private void registerUpgrades() {

@@ -122,6 +122,7 @@ public class PingPlayer {
         System.arraycopy(utils.longToBytes(pings), 0, data, 0, 8);
         System.arraycopy(utils.longToBytes(power), 0, data, 8, 8);
         System.arraycopy(utils.longToBytes(bossPoints), 0, data, 16, 8);
+        if(guild == null) guild = "7fffffffffffffff";
         System.arraycopy(utils.longToBytes(Long.parseUnsignedLong(guild, 16)), 0, data, 24, 8);
         System.arraycopy(utils.longToBytes(lastTime), 0, data, 32, 8);
         int i = 40;
@@ -156,7 +157,9 @@ public class PingPlayer {
                 generators.put(id, amount);
             }
         }
-        return new PingPlayer(member, pings, power, bossPoints, Long.toHexString(guild), lastTime, generators);
+        String guildId = Long.toHexString(utils.bytesToLong(byteData));
+        if(guildId.equals("7fffffffffffffff")) guildId = null;
+        return new PingPlayer(member, pings, power, bossPoints, guildId, lastTime, generators);
     }
 
     public boolean equals(Object o) {

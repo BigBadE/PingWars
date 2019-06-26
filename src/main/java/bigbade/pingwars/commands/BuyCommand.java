@@ -64,8 +64,12 @@ public class BuyCommand extends CommandBase {
         for (int i = 0; i < Math.min(page * 5 + 5, main.generators.size()); i++) {
             Generator generator = main.generators.get(i);
             long amount;
-            amount = pingPlayer.getGenerators().get(generator.getId());
-            builder.addField(generator.getName(), generator.getDescription() + "\nPrice: " + generator.getPrice() + " Owned: " + amount, false);
+            try {
+                amount = pingPlayer.getGenerators().get(generator.getId());
+            } catch (NullPointerException ignored) {
+                amount = 0;
+            }
+            builder.addField(generator.getName(), generator.getDescription() + "\nPrice: " + generator.getPrice() + " | Owned: " + amount, false);
         }
         return builder.build();
     }

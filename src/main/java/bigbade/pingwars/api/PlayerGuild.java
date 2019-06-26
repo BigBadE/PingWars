@@ -100,7 +100,7 @@ public class PlayerGuild {
     }
 
     public boolean checkWar() {
-        return warTime - System.currentTimeMillis() >= TimeUnit.HOUR;
+        return warTime - System.currentTimeMillis() >= TimeUnit.MINUTE;
     }
 
     public void endWar(boolean win, Guild guild, FlatFileHelper utils) {

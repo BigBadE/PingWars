@@ -51,7 +51,7 @@ public class MessageListener extends ListenerAdapter {
             for (int i = 1; i < mentions.length; i++) {
                 String id = mentions[i].split(">")[0];
                 PingPlayer target = main.getFileHelper().loadPlayer(event.getGuild().getMemberById(id));
-                if (target.getGuild().equals(pingPlayer.getGuild()) || event.getGuild().getMemberById(id).getUser().isBot()) continue;
+                if (target.getGuild() != null && target.getGuild().equals(pingPlayer.getGuild()) || event.getGuild().getMemberById(id).getUser().isBot()) continue;
                 target.addPings(-1);
                 pingPlayer.addPings(1);
             }

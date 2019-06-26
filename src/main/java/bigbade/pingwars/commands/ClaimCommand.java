@@ -2,6 +2,7 @@ package bigbade.pingwars.commands;
 
 import bigbade.pingwars.PingWars;
 import bigbade.pingwars.api.*;
+import bigbade.pingwars.util.TimeUnit;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -21,7 +22,7 @@ public class ClaimCommand extends CommandBase {
             PingPlayer pingTarget = main.getFileHelper().loadPlayer(target);
             PlayerGuild guild = main.getFileHelper().loadGuild(redeem.getGuild(), event.getGuild(),null, null);
             PlayerGuild targetGuild = main.getFileHelper().loadGuild(pingTarget.getGuild(), event.getGuild(),null, null);
-            if (guild.getWar() != null) {
+            if (guild != null && guild.getWar() != null) {
                 if(guild.checkWar()) {
                     boolean won = guild.warScore() > guild.warScore();
                     guild.endWar(won, event.getGuild(), main.getFileHelper());
@@ -48,7 +49,7 @@ public class ClaimCommand extends CommandBase {
         long passed = System.currentTimeMillis() - redeem.getLastTime();
         for (byte generator : redeem.getGenerators().keySet()) {
             Generator generator1 = main.generators.get(generator);
-            redeemed += Math.floor(passed / generator1.getTime()) * generator1.getPings();
+            redeemed += (Math.floor(passed / generator1.getTime()) * generator1.getPings() * redeem.getGenerators().get(generator1.getId()));
         }
         redeem.setLastTime(System.currentTimeMillis());
         return redeemed;

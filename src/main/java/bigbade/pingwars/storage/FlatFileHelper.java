@@ -42,7 +42,7 @@ public class FlatFileHelper {
             try {
                 bytes = Files.readAllBytes(path);
             } catch (IOException e) {
-                e.printStackTrace();
+                PingWars.LOGGER.error("Could not read player file", e);
             }
             assert bytes != null;
             PingPlayer pingPlayer = PingPlayer.loadPlayer(bytes, player, utils);
