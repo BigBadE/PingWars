@@ -23,7 +23,7 @@ public class FlatFileHelper {
 
     private PingWars main;
 
-    private Random random;
+    private Random random = new Random();
 
     public FlatFileHelper(PingWars main) {this.main = main; }
 
@@ -47,7 +47,7 @@ public class FlatFileHelper {
             cache.add(pingPlayer);
             return pingPlayer;
         }
-        PingPlayer pingPlayer = new PingPlayer(player, 0, 0, 0, "FFFFFFFF", System.currentTimeMillis(), new HashMap<>());
+        PingPlayer pingPlayer = new PingPlayer(player, 0, 0, 0, null, System.currentTimeMillis(), new HashMap<>());
         cache.add(pingPlayer);
         return pingPlayer;
     }
@@ -62,7 +62,7 @@ public class FlatFileHelper {
         if(configs.size() > 50)
             saveCache();
         Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\" + guild.getId() + "\\config.dat");
-        if(Files.exists(path)) {
+        configLoad: if(Files.exists(path)) {
             byte[] bytes = null;
             try {
                 bytes = Files.readAllBytes(path);
@@ -70,6 +70,7 @@ public class FlatFileHelper {
                 e.printStackTrace();
             }
             assert bytes != null;
+            if(bytes.length == 0) break configLoad;
             GuildConfig config = GuildConfig.load(bytes, utils, guild);
             configs.add(config);
             return config;
@@ -79,15 +80,15 @@ public class FlatFileHelper {
         return config;
     }
 
-    public PlayerGuild loadGuild(String id, Member leader, String name) {
+    public PlayerGuild loadGuild(String id, Guild guild, Member leader, String name) {
         if(id != null) {
-            for (PlayerGuild guild : guilds) {
-                if (guild.getId().equals(id))
-                    return guild;
+            for (PlayerGuild pGuild : guilds) {
+                if (pGuild.getId().equals(id))
+                    return pGuild;
             }
             if (guilds.size() > 50)
                 saveCache();
-            Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\guilds" + id + ".dat");
+            Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\" + guild.getId() + "\\guilds\\" + id + ".dat");
             if (Files.exists(path)) {
                 byte[] bytes = null;
                 try {
@@ -96,9 +97,9 @@ public class FlatFileHelper {
                     e.printStackTrace();
                 }
                 assert bytes != null;
-                PlayerGuild guild = PlayerGuild.load(bytes, utils, main);
-                guilds.add(guild);
-                return guild;
+                PlayerGuild pGuild = PlayerGuild.load(bytes, utils, main, guild);
+                guilds.add(pGuild);
+                return pGuild;
             } else {
                 return null;
             }
@@ -111,9 +112,10 @@ public class FlatFileHelper {
             players.add(leader.getUser().getIdLong());
             Set<Long> elders = new HashSet<>();
             elders.add(leader.getUser().getIdLong());
-            PlayerGuild guild = new PlayerGuild(random.nextLong(), leader.getUser().getIdLong(), 0, upgrades, null, players, elders, name);
-            guilds.add(guild);
-            return guild;
+            PlayerGuild pGuild = new PlayerGuild(random.nextLong(), leader.getUser().getIdLong(), 0, upgrades, null, players, elders, name, leader.getGuild());
+            loadPlayer(leader).setGuild(pGuild.getId());
+            guilds.add(pGuild);
+            return pGuild;
         }
         return null;
     }
@@ -123,9 +125,10 @@ public class FlatFileHelper {
         for(PingPlayer pingPlayer : cache) {
             try {
                 Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\" + pingPlayer.getMember().getGuild().getId() + "\\" + pingPlayer.getMember().getUser().getId() + ".dat");
-                if(!Files.exists(path))
-                    if(!path.toFile().createNewFile())
+                if(!Files.exists(path)) {
+                    if (!path.toFile().createNewFile())
                         PingWars.LOGGER.error("Could not create player data file");
+                }
                 Files.write(path, pingPlayer.save(utils));
             } catch (IOException e) {
                 PingWars.LOGGER.error("Could not write data to save file", e);
@@ -144,7 +147,7 @@ public class FlatFileHelper {
         }
         for(PlayerGuild guild : guilds) {
             try {
-                Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\guilds\\" + guild.getId() + ".dat");
+                Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\" + guild.getGuild().getId() + "\\guilds\\" + guild.getId() + ".dat");
                 if(!Files.exists(path))
                     if(!path.toFile().createNewFile())
                         PingWars.LOGGER.error("Could not create guild data file!");
@@ -152,6 +155,17 @@ public class FlatFileHelper {
             } catch (IOException e) {
                 PingWars.LOGGER.error("Could not write guild data to save file", e);
             }
+        }
+    }
+
+    public void deleteGuild(String id) {
+        for(PlayerGuild guild : guilds)
+            if(guild.getId().equals(id))
+                guilds.remove(guild);
+        try {
+            Files.delete(FileSystems.getDefault().getPath(main.filepath + "\\data\\guilds\\" + id + ".dat"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

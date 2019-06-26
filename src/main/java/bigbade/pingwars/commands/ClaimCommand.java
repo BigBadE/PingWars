@@ -19,16 +19,21 @@ public class ClaimCommand extends CommandBase {
             Member target = event.getGuild().getMemberById(args[1].replace("<@", "").replace(">", ""));
             PingPlayer redeem = main.getFileHelper().loadPlayer(event.getMember());
             PingPlayer pingTarget = main.getFileHelper().loadPlayer(target);
-            PlayerGuild guild = main.getFileHelper().loadGuild(redeem.getGuild(), null, null);
+            PlayerGuild guild = main.getFileHelper().loadGuild(redeem.getGuild(), event.getGuild(),null, null);
+            PlayerGuild targetGuild = main.getFileHelper().loadGuild(pingTarget.getGuild(), event.getGuild(),null, null);
             if (guild.getWar() != null) {
-                if (pingTarget.getGuild().equals(main.getFileHelper().loadGuild(pingTarget.getGuild(), null, null).getWar())) {
+                if(guild.checkWar()) {
+                    boolean won = guild.warScore() > guild.warScore();
+                    guild.endWar(won, event.getGuild(), main.getFileHelper());
+                }
+                if (pingTarget.getGuild().equals(main.getFileHelper().loadGuild(pingTarget.getGuild(), event.getGuild(),null, null).getWar())) {
                     event.getChannel().sendMessage("You cannot ping " + target.getEffectiveName() + ", you are at war!").queue();
                     return;
                 }
                 long redeemed = redeem(redeem);
                 redeem.addPings(redeemed);
-                guild.warPing(pingTarget.getMember().getUser().getIdLong(), redeemed);
-                main.getFileHelper().loadGuild(pingTarget.getGuild(), null, null).warPing(pingTarget.getMember().getUser().getIdLong(), redeemed);
+                guild.warPing(event.getMember().getUser().getIdLong(), redeemed);
+                targetGuild.attackPing(pingTarget.getMember().getUser().getIdLong(), redeemed);
                 return;
             }
             long redeemed = redeem(redeem);

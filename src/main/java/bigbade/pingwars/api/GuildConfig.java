@@ -36,7 +36,12 @@ public class GuildConfig {
     }
 
     public byte[] save(ByteUtils utils) {
-        byte[] data = new byte[8 + commandChannels.length * 8];
+        int length;
+        if(commandChannels == null)
+            length = 0;
+        else
+            length = commandChannels.length;
+        byte[] data = new byte[8 + length * 8];
         byte[] temp;
         if (pingChannel == null)
             temp = new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};

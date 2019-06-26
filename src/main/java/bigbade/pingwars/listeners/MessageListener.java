@@ -2,8 +2,8 @@ package bigbade.pingwars.listeners;
 
 import bigbade.pingwars.PingWars;
 import bigbade.pingwars.api.CommandBase;
-import bigbade.pingwars.api.PermissionLevel;
 import bigbade.pingwars.api.GuildConfig;
+import bigbade.pingwars.api.PermissionLevel;
 import bigbade.pingwars.api.PingPlayer;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -50,8 +50,9 @@ public class MessageListener extends ListenerAdapter {
             PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());
             for (int i = 1; i < mentions.length; i++) {
                 String id = mentions[i].split(">")[0];
-                if (id.equals(main.shards.get(0).getSelfUser().getId())) continue;
-                main.getFileHelper().loadPlayer(event.getGuild().getMemberById(id)).addPings(-1);
+                PingPlayer target = main.getFileHelper().loadPlayer(event.getGuild().getMemberById(id));
+                if (target.getGuild().equals(pingPlayer.getGuild()) || id.equals(main.shards.get(0).getSelfUser().getId())) continue;
+                target.addPings(-1);
                 pingPlayer.addPings(1);
             }
         }

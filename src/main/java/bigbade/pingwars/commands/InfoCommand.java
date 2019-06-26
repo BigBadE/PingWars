@@ -19,6 +19,6 @@ public class InfoCommand extends CommandBase {
     public void onCommand(MessageReceivedEvent event, String[] args) {
         PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());
         event.getChannel().sendMessage(new EmbedBuilder().setAuthor(event.getMember().getEffectiveName(), null, event.getAuthor().getEffectiveAvatarUrl()).setColor(Color.GREEN).setTitle("Stats for " + event.getAuthor().getAsTag())
-                .addField(new MessageEmbed.Field("Pings: " + pingPlayer.getDisplayPings(), "Power: " + pingPlayer.getDisplayPower() + "\nBoss Points: " + pingPlayer.getDisplayBP() + "\nCurrent Guild: " + ((pingPlayer.getGuild().equals("FFFFFFFF")) ? "None" : main.getFileHelper().loadGuild(pingPlayer.getGuild(), null, null)), false)).build()).queue();
+                .addField(new MessageEmbed.Field("Pings: " + pingPlayer.getDisplayPings(), "Power: " + pingPlayer.getDisplayPower() + "\nBoss Points: " + pingPlayer.getDisplayBP() + "\nCurrent Guild: " + ((pingPlayer.getGuild() != null) ? main.getFileHelper().loadGuild(pingPlayer.getGuild(), event.getGuild(),null, null).getName() : "None"), false)).build()).queue();
     }
 }
