@@ -1,0 +1,5 @@
+Manifest-Version: 1.2
+Main-Class: bigbade.pingwars.PingWars
+Created-By: Big_Bad_E
+Signature-Version: 1.2.0
+Name: PingWars
