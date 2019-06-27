@@ -35,12 +35,14 @@ public class ClaimCommand extends CommandBase {
                     return;
                 }
                 long redeemed = redeem(redeem, main);
+                redeem.setLastTime(System.currentTimeMillis());
                 redeem.addPings(redeemed);
                 guild.warPing(event.getMember().getUser().getIdLong(), redeemed);
                 targetGuild.attackPing(pingTarget.getMember().getUser().getIdLong(), redeemed);
                 return;
             }
             long redeemed = redeem(redeem, main);
+            redeem.setLastTime(System.currentTimeMillis());
             try {
                 Boss boss = main.getBosses().get(target);
                 boss.loseHP(redeemed);
@@ -64,11 +66,7 @@ public class ClaimCommand extends CommandBase {
         for (byte generator : redeem.getGenerators().keySet()) {
             Generator generator1 = main.generators.get(generator);
             redeemed += (Math.floor(passed / generator1.getTime()) * generator1.getPings() * redeem.getGenerators().get(generator1.getId()));
-            System.out.println(Math.floor(passed / generator1.getTime()));
-            System.out.println(generator1.getPings());
-            System.out.println(generator1.getPings() * redeem.getGenerators().get(generator1.getId()));
         }
-        redeem.setLastTime(System.currentTimeMillis());
         return redeemed;
     }
 }
