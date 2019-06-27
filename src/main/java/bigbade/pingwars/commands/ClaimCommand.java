@@ -3,8 +3,11 @@ package bigbade.pingwars.commands;
 import bigbade.pingwars.PingWars;
 import bigbade.pingwars.api.*;
 import bigbade.pingwars.util.TimeUnit;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+
+import java.awt.*;
 
 
 public class ClaimCommand extends CommandBase {
@@ -38,9 +41,20 @@ public class ClaimCommand extends CommandBase {
                 return;
             }
             long redeemed = redeem(redeem);
-            redeem.addPings(redeemed);
-            pingTarget.addPings(-redeemed);
-            event.getChannel().sendMessage(event.getMember().getAsMention() + " pinged " + target.getAsMention() + " " + redeemed + " times.").queue();
+            try {
+                Boss boss = main.getBosses().get(target);
+                boss.loseHP(redeemed);
+                boss.getMessage().editMessage(new EmbedBuilder().setColor(Color.RED).setAuthor(target.getEffectiveName(), null, target.getUser().getEffectiveAvatarUrl()).addField("Boss", "Player: " + target.getUser().getAsTag() + "\nHP: " + boss.getHp() + "/" + boss.getInitialHp() + "", false).setFooter("Ping this player to attack them!", null).build()).queue((boss::setMessage));
+                if(boss.getHp() == 0) {
+                    long earned = (long) Math.floor(boss.getInitialHp()/10000);
+                    event.getChannel().sendMessage("You have defeated the Boss! You earned " + earned + " BP!").queue();
+                    redeem.addBossPoints(earned);
+                }
+            } catch(NullPointerException e) {
+                redeem.addPings(redeemed);
+                pingTarget.addPings(-redeemed);
+                event.getChannel().sendMessage(event.getMember().getAsMention() + " pinged " + target.getAsMention() + " " + redeemed + " times.").queue();
+            }
         }
     }
 
@@ -50,6 +64,9 @@ public class ClaimCommand extends CommandBase {
         for (byte generator : redeem.getGenerators().keySet()) {
             Generator generator1 = main.generators.get(generator);
             redeemed += (Math.floor(passed / generator1.getTime()) * generator1.getPings() * redeem.getGenerators().get(generator1.getId()));
+            System.out.println(Math.floor(passed / generator1.getTime()));
+            System.out.println(generator1.getPings());
+            System.out.println(generator1.getPings() * redeem.getGenerators().get(generator1.getId()));
         }
         redeem.setLastTime(System.currentTimeMillis());
         return redeemed;

@@ -1,5 +1,6 @@
 package bigbade.pingwars;
 
+import bigbade.pingwars.api.Boss;
 import bigbade.pingwars.api.CommandBase;
 import bigbade.pingwars.api.Generator;
 import bigbade.pingwars.commands.*;
@@ -11,17 +12,20 @@ import bigbade.pingwars.listeners.MessageListener;
 import bigbade.pingwars.storage.FlatFileHelper;
 import bigbade.pingwars.upgrades.Upgrade;
 import bigbade.pingwars.util.SimpleLogger;
+import bigbade.pingwars.util.TimeUnit;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
 import net.harawata.appdirs.AppDirsFactory;
 
 import javax.security.auth.login.LoginException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class PingWars {
 
@@ -40,7 +44,13 @@ public class PingWars {
 
     private FlatFileHelper fileHelper = new FlatFileHelper(this);
 
+    private Map<Guild, Long> timeMap = new HashMap<>();
+
+    private Random random = new Random();
+
     public static final SimpleLogger LOGGER = new SimpleLogger();
+
+    private Map<Member, Boss> bosses = new HashMap<>();
 
     public static void main(String[] args) {
         PingWars main = new PingWars();
@@ -129,7 +139,28 @@ public class PingWars {
         generators.add(new Tier3Generator(id));
     }
 
+    //TODO please set this back to like 30 mins
+    public boolean checkBoss(Guild guild) {
+        try {
+            if (System.currentTimeMillis() - timeMap.get(guild) >= TimeUnit.SECOND) {
+                timeMap.replace(guild, System.currentTimeMillis());
+                return random.nextInt(2) == 1;
+            }
+        } catch (NullPointerException e) {
+            timeMap.put(guild, System.currentTimeMillis());
+        }
+        return false;
+    }
+
     private void registerUpgrades() {
 
+    }
+
+    public Map<Member, Boss> getBosses() {
+        return bosses;
+    }
+
+    public void addBoss(Member boss, long hp, Message message) {
+        bosses.put(boss, new Boss(hp, message));
     }
 }

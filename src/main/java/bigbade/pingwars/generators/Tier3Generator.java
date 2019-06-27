@@ -5,6 +5,6 @@ import bigbade.pingwars.util.TimeUnit;
 
 public class Tier3Generator extends Generator {
     public Tier3Generator(byte id) {
-        super("Deli Computer", "You got a Deli Computer from an office that was out of business. You can ping 35 times a second.", TimeUnit.SECOND, 35, 1000, id);
+        super("Dehl Computer", "You got a Dehl Computer from an office that went out of business. You can ping 1 time a second.", TimeUnit.SECOND, 35, 1000, 20, id);
     }
 }

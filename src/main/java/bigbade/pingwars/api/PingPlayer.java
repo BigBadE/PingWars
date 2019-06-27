@@ -157,7 +157,7 @@ public class PingPlayer {
                 generators.put(id, amount);
             }
         }
-        String guildId = Long.toHexString(utils.bytesToLong(byteData));
+        String guildId = Long.toHexString(guild);
         if(guildId.equals("7fffffffffffffff")) guildId = null;
         return new PingPlayer(member, pings, power, bossPoints, guildId, lastTime, generators);
     }

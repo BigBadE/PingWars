@@ -20,12 +20,12 @@ public class BuyCommand extends CommandBase {
     public void onCommand(MessageReceivedEvent event, String[] args) {
         PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());
         if (args.length == 1) {
-            event.getChannel().sendMessage(print(0, pingPlayer)).queue();
+            event.getChannel().sendMessage(print(0, pingPlayer, (int) Math.ceil(main.generators.size()/5))).queue();
         } else if (args.length >= 2) {
             try {
                 int page = Integer.parseInt(args[1]);
-                page = (int) Math.min(page, Math.floor(pingPlayer.getGenerators().size() / 5));
-                event.getChannel().sendMessage(print(page, pingPlayer)).queue();
+                page = (int) Math.min(page, Math.ceil(pingPlayer.getGenerators().size() / 5));
+                event.getChannel().sendMessage(print(page, pingPlayer, (int) Math.ceil(main.generators.size()/5))).queue();
             } catch (NumberFormatException e) {
                 Generator generator = null;
                 boolean added = true;
@@ -57,7 +57,7 @@ public class BuyCommand extends CommandBase {
         }
     }
 
-    private MessageEmbed print(int page, PingPlayer pingPlayer) {
+    private MessageEmbed print(int page, PingPlayer pingPlayer, int maxPage) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(Color.GREEN);
         builder.addField("Use " + main.prefix + "buy (name) to buy a generator.", "", false);
@@ -69,7 +69,13 @@ public class BuyCommand extends CommandBase {
             } catch (NullPointerException ignored) {
                 amount = 0;
             }
-            builder.addField(generator.getName(), generator.getDescription() + "\nPrice: " + generator.getPrice() + " | Owned: " + amount, false);
+            StringBuilder price = new StringBuilder();
+            if(generator.getPrice() > 0)
+                price.append(generator.getPrice()).append(" Pings ");
+            if(generator.getBpPrice() > 0)
+                price.append(generator.getBpPrice()).append(" BP ");
+            builder.addField(generator.getName(), generator.getDescription() + "\nPrice: " + price.toString() + "| Owned: " + amount, false);
+            builder.setFooter("Page " + (page+1) + "/" + (maxPage+1), null);
         }
         return builder.build();
     }

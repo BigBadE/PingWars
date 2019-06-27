@@ -2,15 +2,16 @@ package bigbade.pingwars.api;
 
 public class Generator {
     private final String name, description;
-    private final long time, pings, price;
+    private final long time, pings, bpPrice, price;
     private final byte id;
 
-    public Generator(String name, String description, long time, long pings, long price, byte id) {
+    public Generator(String name, String description, long time, long pings, long price, long bpPrice, byte id) {
         this.name = name;
         this.description = description;
         this.time = time;
         this.pings = pings;
         this.price = price;
+        this.bpPrice = bpPrice;
         this.id = id;
     }
 
@@ -36,5 +37,9 @@ public class Generator {
 
     public String getDescription() {
         return description;
+    }
+
+    public long getBpPrice() {
+        return bpPrice;
     }
 }
