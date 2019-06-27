@@ -2,6 +2,7 @@ package bigbade.pingwars.listeners;
 
 import bigbade.pingwars.PingWars;
 import bigbade.pingwars.api.*;
+import bigbade.pingwars.commands.ClaimCommand;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Member;
@@ -36,7 +37,7 @@ public class MessageListener extends ListenerAdapter {
                         boss = event.getGuild().getMembers().get(random.nextInt(event.getGuild().getMembers().size()));
                     } while (boss.getUser().isBot() || boss.getUser().getIdLong() == event.getMember().getUser().getIdLong());
                     PingPlayer player = main.getFileHelper().loadPlayer(event.getMember());
-                    long hp = player.getPower()*100+(player.getPings()*20);
+                    long hp = player.getPower()*100+(player.getPings()*20)+ClaimCommand.redeem(player, main)*2;
                     event.getChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setAuthor(boss.getEffectiveName(), null, boss.getUser().getEffectiveAvatarUrl()).addField("Boss", "Player: " + boss.getUser().getAsTag() + "\nHP: " + hp + "/" + hp + "", false).setFooter("Ping this player to attack them!", null).build()).queue((message1) -> main.addBoss(boss, hp, message1));
                 }
                 GuildConfig config = main.getFileHelper().loadGuildConfig(event.getGuild());

@@ -34,13 +34,13 @@ public class ClaimCommand extends CommandBase {
                     event.getChannel().sendMessage("You cannot ping " + target.getEffectiveName() + ", you are at war!").queue();
                     return;
                 }
-                long redeemed = redeem(redeem);
+                long redeemed = redeem(redeem, main);
                 redeem.addPings(redeemed);
                 guild.warPing(event.getMember().getUser().getIdLong(), redeemed);
                 targetGuild.attackPing(pingTarget.getMember().getUser().getIdLong(), redeemed);
                 return;
             }
-            long redeemed = redeem(redeem);
+            long redeemed = redeem(redeem, main);
             try {
                 Boss boss = main.getBosses().get(target);
                 boss.loseHP(redeemed);
@@ -58,7 +58,7 @@ public class ClaimCommand extends CommandBase {
         }
     }
 
-    private long redeem(PingPlayer redeem) {
+    public static long redeem(PingPlayer redeem, PingWars main) {
         long redeemed = 0;
         long passed = System.currentTimeMillis() - redeem.getLastTime();
         for (byte generator : redeem.getGenerators().keySet()) {
