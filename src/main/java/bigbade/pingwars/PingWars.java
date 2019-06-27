@@ -139,10 +139,9 @@ public class PingWars {
         generators.add(new Tier3Generator(id));
     }
 
-    //TODO please set this back to like 30 mins
     public boolean checkBoss(Guild guild) {
         try {
-            if (System.currentTimeMillis() - timeMap.get(guild) >= TimeUnit.SECOND) {
+            if (System.currentTimeMillis() - timeMap.get(guild) >= TimeUnit.MINUTE*20) {
                 timeMap.replace(guild, System.currentTimeMillis());
                 return random.nextInt(2) == 1;
             }
