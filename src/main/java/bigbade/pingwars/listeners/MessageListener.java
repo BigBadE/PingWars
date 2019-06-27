@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.awt.*;
+import java.util.Map;
 import java.util.Random;
 
 public class MessageListener extends ListenerAdapter {
@@ -69,10 +70,13 @@ public class MessageListener extends ListenerAdapter {
                 PingPlayer target = main.getFileHelper().loadPlayer(event.getGuild().getMemberById(id));
                 try {
                     Boss boss = main.getBosses().get(target.getMember());
-                    boss.loseHP(1);
+                    boss.loseHP(event.getMember(), 1);
                     boss.getMessage().editMessage(new EmbedBuilder().setColor(Color.RED).setAuthor(target.getMember().getEffectiveName(), null, target.getMember().getUser().getEffectiveAvatarUrl()).addField("Boss", "Player: " + target.getMember().getUser().getAsTag() + "\nHP: " + boss.getHp() + "/" + boss.getInitialHp() + "", false).setFooter("Ping this player to attack them!", null).build()).queue((boss::setMessage));
                     if(boss.getHp() == 0) {
                         long earned = (long) Math.floor(boss.getInitialHp()/10000);
+                        for(Map.Entry<Member, Long> damagers : boss.getAttackers().entrySet()) {
+                            main.getFileHelper().loadPlayer(damagers.getKey()).addBossPoints(earned/(damagers.getValue()/10000));
+                        }
                         event.getChannel().sendMessage("You have defeated the Boss! You earned " + earned + " BP!").queue();
                         pingPlayer.addBossPoints(earned);
                     }

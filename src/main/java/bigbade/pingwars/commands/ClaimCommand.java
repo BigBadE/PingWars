@@ -2,7 +2,6 @@ package bigbade.pingwars.commands;
 
 import bigbade.pingwars.PingWars;
 import bigbade.pingwars.api.*;
-import bigbade.pingwars.util.TimeUnit;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -45,7 +44,7 @@ public class ClaimCommand extends CommandBase {
             redeem.setLastTime(System.currentTimeMillis());
             try {
                 Boss boss = main.getBosses().get(target);
-                boss.loseHP(redeemed);
+                boss.loseHP(event.getMember(), redeemed);
                 boss.getMessage().editMessage(new EmbedBuilder().setColor(Color.RED).setAuthor(target.getEffectiveName(), null, target.getUser().getEffectiveAvatarUrl()).addField("Boss", "Player: " + target.getUser().getAsTag() + "\nHP: " + boss.getHp() + "/" + boss.getInitialHp() + "", false).setFooter("Ping this player to attack them!", null).build()).queue((boss::setMessage));
                 if(boss.getHp() == 0) {
                     long earned = (long) Math.floor(boss.getInitialHp()/10000);
@@ -53,9 +52,13 @@ public class ClaimCommand extends CommandBase {
                     redeem.addBossPoints(earned);
                 }
             } catch(NullPointerException e) {
-                redeem.addPings(redeemed);
-                pingTarget.addPings(-redeemed);
-                event.getChannel().sendMessage(event.getMember().getAsMention() + " pinged " + target.getAsMention() + " " + redeemed + " times.").queue();
+                if(redeem.getGuild() != null && redeem.getGuild().equals(pingTarget.getGuild()))
+                    event.getChannel().sendMessage("You cannot ping a guildmate!").queue();
+                else {
+                    redeem.addPings(redeemed);
+                    pingTarget.addPings(-redeemed);
+                    event.getChannel().sendMessage(event.getMember().getAsMention() + " pinged " + target.getAsMention() + " " + redeemed + " times.").queue();
+                }
             }
         }
     }
