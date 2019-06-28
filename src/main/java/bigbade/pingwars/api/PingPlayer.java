@@ -103,7 +103,11 @@ public class PingPlayer {
     }
 
     public void addGenerator(Generator generator, long adding) {
+        try {
             generators.get(generator.getId()).addAmount(adding);
+        } catch(NullPointerException e) {
+            generators.put(generator.getId(), new GeneratorData(adding, 0));
+        }
     }
 
     public byte[] save(ByteUtils utils) {
