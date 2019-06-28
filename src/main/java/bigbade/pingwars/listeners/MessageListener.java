@@ -28,6 +28,7 @@ public class MessageListener extends ListenerAdapter {
         if (event.getAuthor().isBot()) return;
         String message = event.getMessage().getContentRaw();
         if (message == null) return;
+        //Check if the message is a command
         if (message.length() >= main.prefix.length()) {
             if (message.substring(0, main.prefix.length()).equalsIgnoreCase(main.prefix)) {
                 if(main.checkBoss(event.getGuild())) {
@@ -62,6 +63,7 @@ public class MessageListener extends ListenerAdapter {
                         }
             }
         }
+        //Get all the mentions in the message
         String[] mentions = message.split("<@");
         if (mentions.length > 0) {
             PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());

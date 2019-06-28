@@ -1,16 +1,18 @@
 package bigbade.pingwars.api;
 
 public class GeneratorData {
+    //Amount of gens
     private long amount;
-    private long prestigue;
+    //Prestige
+    private long prestige;
 
-    public GeneratorData(long amount, long prestigue) {
+    public GeneratorData(long amount, long prestige) {
         this.amount = amount;
-        this.prestigue = prestigue;
+        this.prestige = prestige;
     }
 
     public long getPrestigue() {
-        return prestigue;
+        return prestige;
     }
 
     public long getAmount() {
@@ -18,7 +20,7 @@ public class GeneratorData {
     }
 
     public void addPrestigue() {
-        prestigue++;
+        prestige++;
     }
 
     public void addAmount(long add) {

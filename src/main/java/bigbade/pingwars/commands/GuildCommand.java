@@ -292,10 +292,24 @@ public class GuildCommand extends CommandBase {
 
     }
 
+    /**
+     * Formats three args into RGB for Discord
+     * @param r red
+     * @param g green
+     * @param b blue
+     * @return RGB
+     */
     private Integer formatRGB(String r, String g, String b) {
         return Integer.parseInt(("000" + r).substring(r.length()) + ("000" + b).substring(b.length()) + ("000" + g).substring(g.length()));
     }
 
+    /**
+     * Guild buy page
+     * @param page page
+     * @param guild player's guild
+     * @param maxPage player's generators
+     * @return the embed
+     */
     private MessageEmbed print(int page, PlayerGuild guild, int maxPage) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(Color.GREEN);

@@ -63,6 +63,12 @@ public class ClaimCommand extends CommandBase {
         }
     }
 
+    /**
+     * Finds the amount of tokens a player gains
+     * @param redeem the player
+     * @param main main
+     * @return tokens they get
+     */
     public static long redeem(PingPlayer redeem, PingWars main) {
         long redeemed = 0;
         long passed = System.currentTimeMillis() - redeem.getLastTime();

@@ -1,7 +1,9 @@
 package bigbade.pingwars.api;
 
 public class Generator {
+    //Name and description
     private final String name, description;
+    //Time for each ping, ping per time, price in bp, and price
     private final long time, pings, bpPrice, price;
     private final byte id;
 

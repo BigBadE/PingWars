@@ -28,27 +28,39 @@ import java.util.*;
 
 public class PingWars {
 
+    //Token and prefix
     private String token;
     public String prefix;
 
+    //Amount of shards
     private int shardAmt = 1;
 
-    public String filepath = AppDirsFactory.getInstance().getUserDataDir("PingBot", null, "Big_Bad_E");
+    //Path to the data directory
+    public String filepath = AppDirsFactory.getInstance().getUserDataDir("PingBot", null, "Big_Bad_E") + "\\data\\";
 
+    //List of JDA instances
     private List<JDA> shards = new ArrayList<>();
 
+    //All commands
     public List<CommandBase> commands = new ArrayList<>();
+    //All generators
     public List<Generator> generators = new ArrayList<>();
+    //All upgrades
     public List<Upgrade> upgrades = new ArrayList<>();
 
+    //FileHelper to load players, guilds, and configs
     private FlatFileHelper fileHelper = new FlatFileHelper(this);
 
+    //Map of war start times
     private Map<Guild, Long> timeMap = new HashMap<>();
 
+    //Random for boss spawning
     private Random random = new Random();
 
+    //My own logger instance because log4j wouldn't work
     public static final SimpleLogger LOGGER = new SimpleLogger();
 
+    //Map of all bosses and their member
     private Map<Member, Boss> bosses = new HashMap<>();
 
     public static void main(String[] args) {
@@ -57,6 +69,11 @@ public class PingWars {
         main.start();
     }
 
+    /**
+     * Parses the args
+     *
+     * @param args program args
+     */
     private void load(String[] args) {
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -75,6 +92,9 @@ public class PingWars {
         }
     }
 
+    /**
+     * Start the bot shards
+     */
     private void start() {
         if (token == null) {
             LOGGER.info("No token is set!");
@@ -85,7 +105,7 @@ public class PingWars {
             prefix = "!";
         }
         LOGGER.info("Setting up save directory");
-        Path dataDir = FileSystems.getDefault().getPath(filepath + "data\\");
+        Path dataDir = FileSystems.getDefault().getPath(filepath);
         if (!Files.exists(dataDir))
             if (!dataDir.toFile().mkdirs() && !dataDir.toFile().mkdir())
                 LOGGER.error("Could not create data directory!");
@@ -106,6 +126,9 @@ public class PingWars {
         registerUpgrades();
     }
 
+    /**
+     * Stop the bot
+     */
     public void stop() {
         LOGGER.info("Stopping shards");
         for (JDA jda : shards)
@@ -116,10 +139,17 @@ public class PingWars {
         System.exit(-1);
     }
 
+    /**
+     * File helper getter
+     * @return file helper
+     */
     public FlatFileHelper getFileHelper() {
         return fileHelper;
     }
 
+    /**
+     * Register commands
+     */
     private void registerCommands() {
         commands.add(new ConfigCommand(this));
         commands.add(new StopCommand(this));
@@ -131,6 +161,9 @@ public class PingWars {
         commands.add(new PrestigeCommand(this));
     }
 
+    /**
+     * Register generators
+     */
     private void registerGenerators() {
         byte id = 0;
         generators.add(new TierOneGenerator(id));
@@ -154,6 +187,11 @@ public class PingWars {
         generators.add(new TierTenGenerator(id));
     }
 
+    /**
+     * Check if a boss is spawned
+     * @param guild
+     * @return
+     */
     public boolean checkBoss(Guild guild) {
         try {
             if (System.currentTimeMillis() - timeMap.get(guild) >= TimeUnit.MINUTE*5) {
@@ -166,15 +204,28 @@ public class PingWars {
         return false;
     }
 
+    /**
+     * Register upgrades
+     */
     private void registerUpgrades() {
         byte id = 0;
         upgrades.add(new PlayerMaxOne(id));
     }
 
+    /**
+     * Get all bosses
+     * @return bosses hashmap
+     */
     public Map<Member, Boss> getBosses() {
         return bosses;
     }
 
+    /**
+     * Add a boss
+     * @param boss member that is the boss
+     * @param hp hp left
+     * @param message the original message for editing later
+     */
     public void addBoss(Member boss, long hp, Message message) {
         bosses.put(boss, new Boss(hp, message));
     }

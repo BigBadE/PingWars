@@ -44,7 +44,9 @@ public class BuyCommand extends CommandBase {
                     if (repeatGenerator.getName().equalsIgnoreCase(name.toString()) || repeatGenerator.getName().split(" ")[0].equalsIgnoreCase(args[1]))
                         generator = repeatGenerator;
                 if (generator != null) {
+                    //Check if they have enough pings
                     if (Long.compareUnsigned(pingPlayer.getPings(), generator.getPrice() * adding) >= 0) {
+                        //Add the gen and take the pings
                         pingPlayer.addPings(-(generator.getPrice() * adding));
                         pingPlayer.addPower(adding);
                         pingPlayer.addGenerator(generator, adding);
@@ -58,6 +60,13 @@ public class BuyCommand extends CommandBase {
         }
     }
 
+    /**
+     * Print out the buy menu
+     * @param gens How many gens to print
+     * @param pingPlayer The player
+     * @param maxGen Amount of gens the player has
+     * @return the embed
+     */
     private MessageEmbed print(int gens, PingPlayer pingPlayer, int maxGen) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(Color.GREEN);
