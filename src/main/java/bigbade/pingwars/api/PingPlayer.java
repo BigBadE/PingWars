@@ -54,7 +54,9 @@ public class PingPlayer {
         return guild;
     }
 
-    public Map<Byte, GeneratorData> getGenerators() { return generators; }
+    public Map<Byte, GeneratorData> getGenerators() {
+        return generators;
+    }
 
     //The Long is stored as unsigned (as you cannot have negative pings) so we have to convert it to a good looking number.
     public String getDisplayPings() {
@@ -69,7 +71,9 @@ public class PingPlayer {
         return Long.toUnsignedString(bossPoints);
     }
 
-    public Long getLastTime() { return lastTime; }
+    public Long getLastTime() {
+        return lastTime;
+    }
 
     public void setPings(long pings) {
         this.pings = pings;
@@ -87,7 +91,9 @@ public class PingPlayer {
         this.guild = guild;
     }
 
-    public void setLastTime(long lastTime) { this.lastTime = lastTime; }
+    public void setLastTime(long lastTime) {
+        this.lastTime = lastTime;
+    }
 
     public void addPings(long add) {
         this.pings += add;
@@ -105,28 +111,28 @@ public class PingPlayer {
     public void addGenerator(Generator generator, long adding) {
         try {
             generators.get(generator.getId()).addAmount(adding);
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             generators.put(generator.getId(), new GeneratorData(adding, 0));
         }
     }
 
     public byte[] save(ByteUtils utils) {
         int amount = 40;
-        amount += generators.size()*17;
+        amount += generators.size() * 17;
         byte[] data = new byte[amount];
         System.arraycopy(utils.longToBytes(pings), 0, data, 0, 8);
         System.arraycopy(utils.longToBytes(power), 0, data, 8, 8);
         System.arraycopy(utils.longToBytes(bossPoints), 0, data, 16, 8);
-        if(guild == null) guild = "7fffffffffffffff";
+        if (guild == null) guild = "7fffffffffffffff";
         System.arraycopy(utils.longToBytes(Long.parseUnsignedLong(guild, 16)), 0, data, 24, 8);
         System.arraycopy(utils.longToBytes(lastTime), 0, data, 32, 8);
         int i = 40;
-        for(byte generator : generators.keySet()) {
+        for (byte generator : generators.keySet()) {
             data[i] = generator;
             GeneratorData generator1 = generators.get(generator);
-            System.arraycopy(utils.longToBytes(generator1.getAmount()), 0, data, i+1, 8);
-            System.arraycopy(utils.longToBytes(generator1.getPrestigue()), 0, data, i+9, 8);
-            i+=17;
+            System.arraycopy(utils.longToBytes(generator1.getAmount()), 0, data, i + 1, 8);
+            System.arraycopy(utils.longToBytes(generator1.getPrestigue()), 0, data, i + 9, 8);
+            i += 17;
         }
         return data;
     }
@@ -144,10 +150,10 @@ public class PingPlayer {
         System.arraycopy(data, 32, byteData, 0, 8);
         long lastTime = utils.bytesToLong(byteData);
         Map<Byte, GeneratorData> generators = new HashMap<>();
-        if(data.length != 40) {
+        if (data.length != 40) {
             int gens = (data.length - 40) / 9;
             for (int i = 0; i < gens; i++) {
-                int pos = 40 + (i * 9);
+                int pos = 40 + (i * 17);
                 byte id = data[pos];
                 System.arraycopy(data, pos + 1, byteData, 0, 8);
                 long amount = utils.bytesToLong(byteData);
@@ -157,7 +163,7 @@ public class PingPlayer {
             }
         }
         String guildId = Long.toHexString(guild);
-        if(guildId.equals("7fffffffffffffff")) guildId = null;
+        if (guildId.equals("7fffffffffffffff")) guildId = null;
         return new PingPlayer(member, pings, power, bossPoints, guildId, lastTime, generators);
     }
 

@@ -85,7 +85,7 @@ public class PingWars {
             prefix = "!";
         }
         LOGGER.info("Setting up save directory");
-        Path dataDir = FileSystems.getDefault().getPath(filepath);
+        Path dataDir = FileSystems.getDefault().getPath(filepath + "data\\");
         if (!Files.exists(dataDir))
             if (!dataDir.toFile().mkdirs() && !dataDir.toFile().mkdir())
                 LOGGER.error("Could not create data directory!");
