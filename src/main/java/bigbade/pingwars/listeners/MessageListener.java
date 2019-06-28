@@ -65,7 +65,7 @@ public class MessageListener extends ListenerAdapter {
         String[] mentions = message.split("<@");
         if (mentions.length > 0) {
             PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());
-            for (int i = 1; i < Math.min(mentions.length, 5); i++) {
+            for (int i = 1; i < Math.min(mentions.length, 6); i++) {
                 String id = mentions[i].split(">")[0];
                 PingPlayer target = main.getFileHelper().loadPlayer(event.getGuild().getMemberById(id));
                 try {

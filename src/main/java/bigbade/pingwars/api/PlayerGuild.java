@@ -61,18 +61,22 @@ public class PlayerGuild {
         return name;
     }
 
-    public boolean invited(Member member) { return invites.contains(member); }
+    public long getWarTime() { return warTime; }
 
-    public boolean isElder(Member member) { return elders.contains(member.getUser().getIdLong()); }
+    public boolean invited(Member member) {
+        return invites.contains(member);
+    }
+
+    public boolean isElder(Member member) {
+        return elders.contains(member.getUser().getIdLong());
+    }
 
     public boolean hasUpgrade(byte upgrade) {
         return upgrades.get(upgrade);
     }
 
     public void addMember(long id) {
-        System.out.println("Added to " + this);
         members.add(id);
-        System.out.println(members.size());
     }
 
     public long warScore() {
@@ -91,12 +95,16 @@ public class PlayerGuild {
         attackValues.replace(id, warValues.get(id) + pings);
     }
 
-    public boolean addUpgrade(byte upgrade) {
-        if (!upgrades.get(upgrade))
-            upgrades.replace(upgrade, true);
-        else
-            return false;
-        return true;
+    public void addUpgrade(byte upgrade) {
+        upgrades.replace(upgrade, true);
+        if (upgrade == (byte) 3) {
+            guild.getController().createRole().queue((role) -> {
+                role.getManager().setHoisted(true).queue();
+                role.getManager().setName(name).queue();
+                for (long player : members)
+                    guild.getController().addSingleRoleToMember(guild.getMemberById(player), role).queue();
+            });
+        }
     }
 
     public boolean checkWar() {
@@ -105,8 +113,14 @@ public class PlayerGuild {
 
     public void endWar(boolean win, Guild guild, FlatFileHelper utils) {
         if (win) {
-            for (long player : warValues.keySet())
-                utils.loadPlayer(guild.getMemberById(player)).addPings(warValues.get(player) + attackValues.get(player));
+            long won = 0;
+            long warValue;
+            for (long player : warValues.keySet()) {
+                warValue = warValues.get(player);
+                utils.loadPlayer(guild.getMemberById(player)).addPings(warValue + attackValues.get(player));
+                won += warValue;
+            }
+            points += won/1000;
         }
         warValues = null;
         attackValues = null;
@@ -125,7 +139,7 @@ public class PlayerGuild {
     }
 
     public void promote(long id, String rank) {
-        if(rank.equals("e"))
+        if (rank.equals("e"))
             elders.add(id);
         else
             leader = id;
@@ -142,8 +156,19 @@ public class PlayerGuild {
         this.warTime = System.currentTimeMillis();
     }
 
+    public long maxPlayers() {
+        if (upgrades.get((byte) 0))
+            if (upgrades.get((byte) 1))
+                if (upgrades.get((byte) 2))
+                    return 150;
+                else
+                    return 100;
+            else
+                return 75;
+        return 50;
+    }
+
     public static PlayerGuild load(byte[] data, ByteUtils utils, PingWars main, Guild guild) {
-        StringBuilder builder = new StringBuilder();
         byte[] byteData = new byte[8];
         System.arraycopy(data, 0, byteData, 0, 8);
         long id = utils.bytesToLong(byteData);
@@ -179,7 +204,6 @@ public class PlayerGuild {
                 i += 8;
                 break;
             } else {
-                System.out.println("Found");
                 members.add(member);
                 i += 8;
             }
@@ -216,7 +240,7 @@ public class PlayerGuild {
             i += 8;
         }
         System.arraycopy(utils.longToBytes(Long.MAX_VALUE), 0, data, i, 8);
-        i+=8;
+        i += 8;
         for (long elder : elders) {
             System.arraycopy(utils.longToBytes(elder), 0, data, i, 8);
             i += 8;

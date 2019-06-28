@@ -4,13 +4,12 @@ import bigbade.pingwars.api.Boss;
 import bigbade.pingwars.api.CommandBase;
 import bigbade.pingwars.api.Generator;
 import bigbade.pingwars.commands.*;
-import bigbade.pingwars.generators.StrongGenerator;
-import bigbade.pingwars.generators.Tier3Generator;
-import bigbade.pingwars.generators.WeakGenerator;
+import bigbade.pingwars.generators.*;
 import bigbade.pingwars.listeners.GuildJoinListener;
 import bigbade.pingwars.listeners.MessageListener;
 import bigbade.pingwars.storage.FlatFileHelper;
 import bigbade.pingwars.upgrades.Upgrade;
+import bigbade.pingwars.upgrades.maxplayers.PlayerMaxOne;
 import bigbade.pingwars.util.SimpleLogger;
 import bigbade.pingwars.util.TimeUnit;
 import net.dv8tion.jda.core.AccountType;
@@ -132,11 +131,25 @@ public class PingWars {
 
     private void registerGenerators() {
         byte id = 0;
-        generators.add(new WeakGenerator(id));
+        generators.add(new TierOneGenerator(id));
         id++;
-        generators.add(new StrongGenerator(id));
+        generators.add(new TierTwoGenerator(id));
         id++;
-        generators.add(new Tier3Generator(id));
+        generators.add(new TierThreeGenerator(id));
+        id++;
+        generators.add(new TierFourGenerator(id));
+        id++;
+        generators.add(new TierFiveGenerator(id));
+        id++;
+        generators.add(new TierSixGenerator(id));
+        id++;
+        generators.add(new TierSevenGenerator(id));
+        id++;
+        generators.add(new TierEightGenerator(id));
+        id++;
+        generators.add(new TierNineGenerator(id));
+        id++;
+        generators.add(new TierTenGenerator(id));
     }
 
     public boolean checkBoss(Guild guild) {
@@ -152,7 +165,8 @@ public class PingWars {
     }
 
     private void registerUpgrades() {
-
+        byte id = 0;
+        upgrades.add(new PlayerMaxOne(id));
     }
 
     public Map<Member, Boss> getBosses() {

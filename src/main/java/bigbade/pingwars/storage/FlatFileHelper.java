@@ -150,7 +150,6 @@ public class FlatFileHelper {
         }
         for (PlayerGuild guild : guilds) {
             try {
-                System.out.println("Saving " + guild);
                 Path path = FileSystems.getDefault().getPath(main.filepath + "\\data\\" + guild.getGuild().getId() + "\\guilds\\" + guild.getId() + ".dat");
                 if (!Files.exists(path))
                     if (!path.toFile().createNewFile())
