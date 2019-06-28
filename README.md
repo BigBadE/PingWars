@@ -40,25 +40,35 @@ https://discord.gg/afkZuqW
 - Sacrifice generators to prestige them, giving a 15% bonus to pings
 
 # Planned features
-- Prestiging generators, taking a large amount of generators for a bonus precent of pings when claimed
 - Special events (New Years, Thanksgiving, Easter, etc...)
 - Big Boss events?
-- Looking for other ideas on Discord, want to focus on Guilds.
 - Switch from unsigned Longs to BitIngeters to allow for infinite pings.
+- Looking for other ideas on Discord, want to focus on Guilds.
 
 # Needed improvements
 
-This economy bot was made in a week, so there is 1 balance update so far. I will try to remain vigilent with balancing the economy, but
+This economy bot was made in a week, so there have been 2 balance updates so far. I will try to remain vigilent with balancing the economy, but
 it won't be perfect right now.
 
 # Current balance mechanics
 
-The claim system is setup so new plyers being targetted won't be punished. Claimed pings can be immediately invested into generators, and
+The claim system is setup so new players being targeted won't be punished. Claimed pings can be immediately invested into generators, and
 players can gain small amounts of BP from helping with boss battles. Initiating Guild Wars also requires knowing the Guild ID, meaning
 a guild member from the guild must do !guild info for other guilds to be able to declare war. Guild Leaders can also stop a war, instantly
 making the opposing guild win.
 
 # Misc
+- I added configuration to limit pings/commands to certain channels.
+- I created my own flat file system to store data files as bytes to save player data ( I worked on it some before with another project but refined it for my use here)
 
-I added configuration to limit pings/commands to certain channels.
-I created my own flat file system to store data files as bytes to save player data ( I worked on it some before with another project but refined it for my use here)
+# Generators
+- Old Computer (5 pings per minute)
+- New Computer (20 pings per minute)
+- Dehl Computer (1 ping per second)
+- BestPurchase Computer (6000 pings per second)
+- Boss Computer (5 pings per second)
+- Supercomputer (25 thousand pings per hour)
+- Outsourcing (10 pings per second)
+- V̕͟o̡҉i̸̢d́̕ ̵͢C̴̛o̷͘m̡̢p̷̶ù͜t̷͠e̡̢r̵̕" (500 pings per minute)
+- Quantum Computer (400 thousand pings per day)
+- Enslave humanity (8 billion pings per week)
