@@ -20,13 +20,13 @@ public class BuyCommand extends CommandBase {
     public void onCommand(MessageReceivedEvent event, String[] args) {
         PingPlayer pingPlayer = main.getFileHelper().loadPlayer(event.getMember());
         if (args.length == 1) {
-            event.getChannel().sendMessage(print(5*(Math.round(pingPlayer.getGenerators().size()/5)), pingPlayer, (int) Math.ceil(main.generators.size()/5))).queue();
+            event.getChannel().sendMessage(print(0, pingPlayer, pingPlayer.getGenerators().size())).queue();
         } else if (args.length >= 2) {
             try {
                 int page = Integer.parseInt(args[1]);
                 page = (int) Math.min(page, Math.ceil(pingPlayer.getGenerators().size() / 5));
                 if(page == 0) page = 1;
-                event.getChannel().sendMessage(print(page*5, pingPlayer, (int) Math.ceil(main.generators.size()/5))).queue();
+                event.getChannel().sendMessage(print((page-1)*5, pingPlayer, pingPlayer.getGenerators().size())).queue();
             } catch (NumberFormatException e) {
                 Generator generator = null;
                 boolean added = true;
@@ -62,7 +62,10 @@ public class BuyCommand extends CommandBase {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(Color.GREEN);
         builder.addField("Use " + main.prefix + "buy (name) to buy a generator.", "", false);
-        for (int i = gens; i < Math.min(gens + 5, maxGen); i++) {
+        System.out.println(Math.min(gens + 5, maxGen));
+        System.out.println(gens+5);
+        System.out.println(maxGen);
+        for (int i = gens; i < Math.min(gens + 5, maxGen+1); i++) {
             Generator generator = main.generators.get(i);
             long amount;
             try {
@@ -76,7 +79,7 @@ public class BuyCommand extends CommandBase {
             if(generator.getBpPrice() > 0)
                 price.append(generator.getBpPrice()).append(" BP ");
             builder.addField(generator.getName(), generator.getDescription() + "\nPrice: " + price.toString() + "| Owned: " + amount, false);
-            builder.setFooter("Page " + ((int) Math.ceil(gens/5)+1) + "/" + (2), null);
+            builder.setFooter("Page " + ((int) Math.ceil(gens/5)+1) + "/" + (int) (Math.ceil(Math.max(pingPlayer.getGenerators().size(), 1)/5)+1), null);
         }
         return builder.build();
     }
