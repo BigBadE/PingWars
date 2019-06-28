@@ -155,7 +155,7 @@ public class PingWars {
 
     public boolean checkBoss(Guild guild) {
         try {
-            if (System.currentTimeMillis() - timeMap.get(guild) >= TimeUnit.MINUTE*20) {
+            if (System.currentTimeMillis() - timeMap.get(guild) >= TimeUnit.MINUTE*5) {
                 timeMap.replace(guild, System.currentTimeMillis());
                 return random.nextInt(2) == 1;
             }
