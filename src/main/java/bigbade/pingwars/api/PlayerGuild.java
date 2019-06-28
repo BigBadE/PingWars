@@ -179,7 +179,7 @@ public class PlayerGuild {
         Map<Byte, Boolean> upgrades = new LinkedHashMap<>();
         byte i = 24;
         for (Upgrade upgrade : main.upgrades) {
-            upgrades.put(upgrade.getId(), byteData[i] == 0x00);
+            upgrades.put(upgrade.getId(), data[i] == 0x00);
             i++;
         }
         System.arraycopy(data, i, byteData, 0, 8);

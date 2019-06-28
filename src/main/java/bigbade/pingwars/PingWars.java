@@ -127,6 +127,7 @@ public class PingWars {
         commands.add(new BuyCommand(this));
         commands.add(new ClaimCommand(this));
         commands.add(new GuildCommand(this));
+        commands.add(new HelpCommand(this));
     }
 
     private void registerGenerators() {

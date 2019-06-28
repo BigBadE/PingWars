@@ -261,11 +261,14 @@ public class GuildCommand extends CommandBase {
                 case "color":
                     if (args.length == 5) {
                         PlayerGuild guild3 = main.getFileHelper().loadGuild(main.getFileHelper().loadPlayer(event.getMember()).getGuild(), event.getGuild(), null, null);
-                        if (guild3.getLeader() == event.getMember().getUser().getIdLong()) {
-                            event.getGuild().getRolesByName(guild3.getName(), false).get(0).getManager().setColor(formatRGB(args[2], args[3], args[4])).queue();
-                        } else {
-                            event.getChannel().sendMessage("You have to be owner to change the guild color!").queue();
-                        }
+                        if(guild3.hasUpgrade((byte) 4)) {
+                            if (guild3.getLeader() == event.getMember().getUser().getIdLong()) {
+                                event.getGuild().getRolesByName(guild3.getName(), false).get(0).getManager().setColor(formatRGB(args[2], args[3], args[4])).queue();
+                            } else {
+                                event.getChannel().sendMessage("You have to be owner to change the guild color!").queue();
+                            }
+                        } else
+                            event.getChannel().sendMessage("You have to buy the tag upgrade first!").queue();
                     } else
                         event.getChannel().sendMessage("You have to specify the RGB!").queue();
                 case "wartime":

@@ -36,23 +36,29 @@ public class ConfigCommand extends CommandBase {
                             .addField(new MessageEmbed.Field("Command Channel", "Set the channel PingBot commands can be used in.\nUsage: " + main.prefix + "config commandchannel #channelname #channel2name #channel3name etc...\nCurrent value: " + cmdChannel, false)).setTitle("Configuration").setColor(Color.GREEN).build()).queue();
         } else {
             if (args[1].equalsIgnoreCase("pingchannel")) {
-                if (!args[2].contains("#<")) {
-                    event.getChannel().sendMessage(args[2] + " is not a recognised channel. Make sure you put a # and clicked on the channel name.").queue();
-                    return;
-                }
-                main.getFileHelper().loadGuildConfig(event.getGuild()).setPingChannel(event.getGuild().getTextChannelById(args[2].replace("<#", "").replace(">", "")));
-                event.getChannel().sendMessage("Set ping channel!").queue();
-            } else if (args[1].equalsIgnoreCase("commandchannel")) {
-                Channel[] commandChannels = new Channel[args.length - 2];
-                for (int i = 2; i < args.length; i++) {
-                    if (!args[i].contains("#")) {
-                        event.getChannel().sendMessage(args[i] + " is not a recognised channel. Make sure you put a # and clicked on the channel name.").queue();
+                if(args.length != 3) {
+                    if (!args[2].contains("#<")) {
+                        event.getChannel().sendMessage(args[2] + " is not a recognised channel. Make sure you put a # and clicked on the channel name.").queue();
                         return;
                     }
-                    commandChannels[i - 2] = event.getGuild().getTextChannelById(args[i].replace("<#", "").replace(">", ""));
-                }
-                main.getFileHelper().loadGuildConfig(event.getGuild()).setCommandChannels(commandChannels);
-                event.getChannel().sendMessage("Set command channel(s)!").queue();
+                    main.getFileHelper().loadGuildConfig(event.getGuild()).setPingChannel(event.getGuild().getTextChannelById(args[2].replace("<#", "").replace(">", "")));
+                    event.getChannel().sendMessage("Set ping channel!").queue();
+                } else
+                    event.getChannel().sendMessage("You have to specify a channel!").queue();
+                } else if (args[1].equalsIgnoreCase("commandchannel")) {
+                if(args.length >= 3) {
+                    Channel[] commandChannels = new Channel[args.length - 2];
+                    for (int i = 2; i < args.length; i++) {
+                        if (!args[i].contains("#")) {
+                            event.getChannel().sendMessage(args[i] + " is not a recognised channel. Make sure you put a # and clicked on the channel name.").queue();
+                            return;
+                        }
+                        commandChannels[i - 2] = event.getGuild().getTextChannelById(args[i].replace("<#", "").replace(">", ""));
+                    }
+                    main.getFileHelper().loadGuildConfig(event.getGuild()).setCommandChannels(commandChannels);
+                    event.getChannel().sendMessage("Set command channel(s)!").queue();
+                } else
+                    event.getChannel().sendMessage("You have to specify a channel!").queue();
             }
         }
     }

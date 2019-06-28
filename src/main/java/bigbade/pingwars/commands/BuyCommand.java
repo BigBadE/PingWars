@@ -13,7 +13,7 @@ import java.awt.*;
 
 public class BuyCommand extends CommandBase {
     public BuyCommand(PingWars main) {
-        super("buy", new String[]{"buy", "b", "shop", "store"}, "Buy generators to get more pings", PermissionLevel.MEMBER, main);
+        super("buy", new String[]{"buy", "b", "shop", "store"}, "Buy generators to get more pings. You can add a number after the name to buyh multiple", PermissionLevel.MEMBER, main);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class BuyCommand extends CommandBase {
                     name.append(args[i]).append(" ");
                 name.deleteCharAt(name.length() - 1);
                 for (Generator repeatGenerator : main.generators)
-                    if (repeatGenerator.getName().equalsIgnoreCase(name.toString()))
+                    if (repeatGenerator.getName().equalsIgnoreCase(name.toString()) || repeatGenerator.getName().split(" ")[0].equalsIgnoreCase(args[1]))
                         generator = repeatGenerator;
                 if (generator != null) {
                     if (Long.compareUnsigned(pingPlayer.getPings(), generator.getPrice() * adding) >= 0) {

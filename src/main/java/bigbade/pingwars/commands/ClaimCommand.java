@@ -11,7 +11,7 @@ import java.awt.*;
 
 public class ClaimCommand extends CommandBase {
     public ClaimCommand(PingWars main) {
-        super("claim", new String[]{"claim", "c"}, "Claim your pings", PermissionLevel.MEMBER, main);
+        super("claim", new String[]{"claim", "c"}, "Claim your pings gotten from generators", PermissionLevel.MEMBER, main);
     }
 
     @Override
