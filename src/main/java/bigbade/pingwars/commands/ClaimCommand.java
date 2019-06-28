@@ -70,7 +70,7 @@ public class ClaimCommand extends CommandBase {
             Generator generator1 = main.generators.get(generator);
             GeneratorData data = redeem.getGenerators().get(generator1.getId());
             long beforePrestigue = (long) (Math.floor(passed / generator1.getTime()) * generator1.getPings() * data.getAmount());
-            redeemed +=  beforePrestigue + (beforePrestigue/(data.getPrestigue()/10));
+            redeemed +=  beforePrestigue + (beforePrestigue/(data.getPrestigue()/15));
         }
         return redeemed;
     }

@@ -11,7 +11,7 @@ public class PrestigeCommand extends CommandBase {
 
     @Override
     public void onCommand(MessageReceivedEvent event, String[] args) {
-        if (args.length < 2) {
+        if (args.length > 2) {
             StringBuilder name = new StringBuilder(args[1] + " ");
             for (int i = 2; i < args.length; i++)
                 name.append(args[i]).append(" ");

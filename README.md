@@ -36,6 +36,9 @@ https://discord.gg/afkZuqW
     - Bosses have a health meter that can be depleted by pinging them
     - When defeated, bosses drop Boss Points (BP) to every player that damaged them (scaled to match the amount of damage)
     
+# Prestige
+- Sacrifice generators to prestige them, giving a 15% bonus to pings
+
 # Planned features
 - Prestiging generators, taking a large amount of generators for a bonus precent of pings when claimed
 - Special events (New Years, Thanksgiving, Easter, etc...)
