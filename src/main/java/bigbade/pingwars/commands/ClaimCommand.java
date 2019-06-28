@@ -68,7 +68,9 @@ public class ClaimCommand extends CommandBase {
         long passed = System.currentTimeMillis() - redeem.getLastTime();
         for (byte generator : redeem.getGenerators().keySet()) {
             Generator generator1 = main.generators.get(generator);
-            redeemed += (Math.floor(passed / generator1.getTime()) * generator1.getPings() * redeem.getGenerators().get(generator1.getId()));
+            GeneratorData data = redeem.getGenerators().get(generator1.getId());
+            long beforePrestigue = (long) (Math.floor(passed / generator1.getTime()) * generator1.getPings() * data.getAmount());
+            redeemed +=  beforePrestigue + (beforePrestigue/(data.getPrestigue()/10));
         }
         return redeemed;
     }

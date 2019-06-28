@@ -29,7 +29,6 @@ public class FlatFileHelper {
         this.main = main;
     }
 
-    @SuppressWarnings("SuspiciousMethodCalls")
     public PingPlayer loadPlayer(Member player) {
         for (PingPlayer pingPlayer : cache)
             if (pingPlayer.getMember().equals(player))

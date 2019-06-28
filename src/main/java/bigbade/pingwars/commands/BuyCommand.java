@@ -62,14 +62,11 @@ public class BuyCommand extends CommandBase {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(Color.GREEN);
         builder.addField("Use " + main.prefix + "buy (name) to buy a generator.", "", false);
-        System.out.println(Math.min(gens + 5, maxGen));
-        System.out.println(gens+5);
-        System.out.println(maxGen);
         for (int i = gens; i < Math.min(gens + 5, maxGen+1); i++) {
             Generator generator = main.generators.get(i);
             long amount;
             try {
-                amount = pingPlayer.getGenerators().get(generator.getId());
+                amount = pingPlayer.getGenerators().get(generator.getId()).getAmount();
             } catch (NullPointerException ignored) {
                 amount = 0;
             }

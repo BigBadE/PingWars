@@ -22,9 +22,9 @@ public class PingPlayer {
     //The member
     private Member member;
     //HashMap of ID and amount of each generator
-    private Map<Byte, Long> generators;
+    private Map<Byte, GeneratorData> generators;
 
-    public PingPlayer(Member member, long pings, long power, long bossPoints, String guild, long lastTime, Map<Byte, Long> generators) {
+    public PingPlayer(Member member, long pings, long power, long bossPoints, String guild, long lastTime, Map<Byte, GeneratorData> generators) {
         this.pings = pings;
         this.power = power;
         this.bossPoints = bossPoints;
@@ -54,7 +54,7 @@ public class PingPlayer {
         return guild;
     }
 
-    public Map<Byte, Long> getGenerators() { return generators; }
+    public Map<Byte, GeneratorData> getGenerators() { return generators; }
 
     //The Long is stored as unsigned (as you cannot have negative pings) so we have to convert it to a good looking number.
     public String getDisplayPings() {
@@ -103,21 +103,12 @@ public class PingPlayer {
     }
 
     public void addGenerator(Generator generator, long adding) {
-        long amount;
-        try {
-            amount = generators.get(generator.getId());
-        } catch(NullPointerException ignored) {
-            amount = 0;
-        }
-        if(amount == 0)
-            generators.put(generator.getId(), adding);
-        else
-            generators.replace(generator.getId(), amount+adding);
+            generators.get(generator.getId()).addAmount(adding);
     }
 
     public byte[] save(ByteUtils utils) {
         int amount = 40;
-        amount += generators.size()*9;
+        amount += generators.size()*17;
         byte[] data = new byte[amount];
         System.arraycopy(utils.longToBytes(pings), 0, data, 0, 8);
         System.arraycopy(utils.longToBytes(power), 0, data, 8, 8);
@@ -128,8 +119,10 @@ public class PingPlayer {
         int i = 40;
         for(byte generator : generators.keySet()) {
             data[i] = generator;
-            System.arraycopy(utils.longToBytes(generators.get(generator)), 0, data, i+1, 8);
-            i+=9;
+            GeneratorData generator1 = generators.get(generator);
+            System.arraycopy(utils.longToBytes(generator1.getAmount()), 0, data, i+1, 8);
+            System.arraycopy(utils.longToBytes(generator1.getPrestigue()), 0, data, i+9, 8);
+            i+=17;
         }
         return data;
     }
@@ -146,7 +139,7 @@ public class PingPlayer {
         long guild = utils.bytesToLong(byteData);
         System.arraycopy(data, 32, byteData, 0, 8);
         long lastTime = utils.bytesToLong(byteData);
-        Map<Byte, Long> generators = new HashMap<>();
+        Map<Byte, GeneratorData> generators = new HashMap<>();
         if(data.length != 40) {
             int gens = (data.length - 40) / 9;
             for (int i = 0; i < gens; i++) {
@@ -154,7 +147,9 @@ public class PingPlayer {
                 byte id = data[pos];
                 System.arraycopy(data, pos + 1, byteData, 0, 8);
                 long amount = utils.bytesToLong(byteData);
-                generators.put(id, amount);
+                System.arraycopy(data, pos + 9, byteData, 0, 8);
+                long prestigue = utils.bytesToLong(byteData);
+                generators.put(id, new GeneratorData(amount, prestigue));
             }
         }
         String guildId = Long.toHexString(guild);
