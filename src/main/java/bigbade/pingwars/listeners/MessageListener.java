@@ -41,7 +41,8 @@ public class MessageListener extends ListenerAdapter {
                     } while (boss.getUser().isBot() || boss.getUser().getIdLong() == event.getMember().getUser().getIdLong());
                     PingPlayer player = main.getFileHelper().loadPlayer(event.getMember());
                     long hp = player.getPower() * 100 + (player.getPings() * 20) + ClaimCommand.redeem(player, main) * 2;
-                    event.getChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setAuthor(boss.getEffectiveName(), null, boss.getUser().getEffectiveAvatarUrl()).addField("Boss", "Player: " + boss.getUser().getAsTag() + "\nHP: " + hp + "/" + hp + "", false).setFooter("Ping this player to attack them!", null).build()).queue((message1) -> main.addBoss(boss, hp, message1));
+                    if (hp > 1000)
+                        event.getChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setAuthor(boss.getEffectiveName(), null, boss.getUser().getEffectiveAvatarUrl()).addField("Boss", "Player: " + boss.getUser().getAsTag() + "\nHP: " + hp + "/" + hp + "", false).setFooter("Ping this player to attack them!", null).build()).queue((message1) -> main.addBoss(boss, hp, message1));
                 }
                 GuildConfig config = main.getFileHelper().loadGuildConfig(event.getGuild());
                 String name = message.substring(main.prefix.length()).split(" ")[0];
