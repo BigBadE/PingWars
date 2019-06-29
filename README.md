@@ -62,13 +62,13 @@ making the opposing guild win.
 - I created my own flat file system to store data files as bytes to save player data ( I worked on it some before with another project but refined it for my use here)
 
 # Generators
-- Old Computer (5 pings per minute)
-- New Computer (20 pings per minute)
-- Dehl Computer (1 ping per second)
+- Old Computer (1 ping per minute)
+- New Computer (10 pings per minute)
+- Dehl Computer (6 pings per second)
 - BestPurchase Computer (6000 pings per second)
 - Boss Computer (5 pings per second)
 - Supercomputer (25 thousand pings per hour)
-- Outsourcing (10 pings per second)
+- Outsourcing (1.339 billion pings per week) (1.339 billion is the population of India)
 - V̕͟o̡҉i̸̢d́̕ ̵͢C̴̛o̷͘m̡̢p̷̶ù͜t̷͠e̡̢r̵̕" (500 pings per minute)
 - Quantum Computer (400 thousand pings per day)
 - Enslave humanity (8 billion pings per week)
