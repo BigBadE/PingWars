@@ -5,6 +5,6 @@ import bigbade.pingwars.util.TimeUnit;
 
 public class TierSevenGenerator extends Generator {
     public TierSevenGenerator(byte id) {
-        super("Outsourcing", "With the power of third world countries, you get 10 pings a second", TimeUnit.SECOND, 10, 200000, 0, id);
+        super("Outsourcing", "With the power of third world countries, you get 1.339 billion pings a week", TimeUnit.WEEK, 1339000000, 20000000, 0, id);
     }
 }

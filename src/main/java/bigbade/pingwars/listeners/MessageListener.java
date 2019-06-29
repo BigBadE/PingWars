@@ -31,15 +31,16 @@ public class MessageListener extends ListenerAdapter {
         //Check if the message is a command
         if (message.length() >= main.prefix.length()) {
             if (message.substring(0, main.prefix.length()).equalsIgnoreCase(main.prefix)) {
-                if(main.checkBoss(event.getGuild())) {
+                if (main.checkBoss(event.getGuild())) {
                     try {
                         main.getBosses().remove(event.getMember());
-                    } catch(NullPointerException ignored) {}
+                    } catch (NullPointerException ignored) {
+                    }
                     do {
                         boss = event.getGuild().getMembers().get(random.nextInt(event.getGuild().getMembers().size()));
                     } while (boss.getUser().isBot() || boss.getUser().getIdLong() == event.getMember().getUser().getIdLong());
                     PingPlayer player = main.getFileHelper().loadPlayer(event.getMember());
-                    long hp = player.getPower()*100+(player.getPings()*20)+ClaimCommand.redeem(player, main)*2;
+                    long hp = player.getPower() * 100 + (player.getPings() * 20) + ClaimCommand.redeem(player, main) * 2;
                     event.getChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setAuthor(boss.getEffectiveName(), null, boss.getUser().getEffectiveAvatarUrl()).addField("Boss", "Player: " + boss.getUser().getAsTag() + "\nHP: " + hp + "/" + hp + "", false).setFooter("Ping this player to attack them!", null).build()).queue((message1) -> main.addBoss(boss, hp, message1));
                 }
                 GuildConfig config = main.getFileHelper().loadGuildConfig(event.getGuild());
@@ -74,15 +75,17 @@ public class MessageListener extends ListenerAdapter {
                     Boss boss = main.getBosses().get(target.getMember());
                     boss.loseHP(event.getMember(), 1);
                     boss.getMessage().editMessage(new EmbedBuilder().setColor(Color.RED).setAuthor(target.getMember().getEffectiveName(), null, target.getMember().getUser().getEffectiveAvatarUrl()).addField("Boss", "Player: " + target.getMember().getUser().getAsTag() + "\nHP: " + boss.getHp() + "/" + boss.getInitialHp() + "", false).setFooter("Ping this player to attack them!", null).build()).queue((boss::setMessage));
-                    if(boss.getHp() == 0) {
-                        long earned = (long) Math.floor(boss.getInitialHp()/10000);
-                        for(Map.Entry<Member, Long> damagers : boss.getAttackers().entrySet()) {
-                            main.getFileHelper().loadPlayer(damagers.getKey()).addBossPoints(earned/(damagers.getValue()/10000));
+                    if (boss.getHp() == 0) {
+                        long earned = (long) Math.floor(boss.getInitialHp() / 10000);
+                        for (Map.Entry<Member, Long> damagers : boss.getAttackers().entrySet()) {
+                            if (damagers.getValue() > 0)
+                                main.getFileHelper().loadPlayer(damagers.getKey()).addBossPoints(earned / (damagers.getValue() / 10000));
                         }
                         event.getChannel().sendMessage("You have defeated the Boss! You earned " + earned + " BP!").queue();
                         pingPlayer.addBossPoints(earned);
+                        main.getBosses().remove(target.getMember());
                     }
-                } catch(NullPointerException e) {
+                } catch (NullPointerException e) {
                     if (target.getGuild() != null && target.getGuild().equals(pingPlayer.getGuild()) || event.getGuild().getMemberById(id).getUser().isBot())
                         continue;
                     target.addPings(-1);

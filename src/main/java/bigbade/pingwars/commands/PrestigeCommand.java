@@ -11,22 +11,29 @@ public class PrestigeCommand extends CommandBase {
 
     @Override
     public void onCommand(MessageReceivedEvent event, String[] args) {
-        if (args.length > 2) {
+        if (args.length > 1) {
             StringBuilder name = new StringBuilder(args[1] + " ");
-            for (int i = 2; i < args.length; i++)
+            for (int i = 1; i < args.length; i++)
                 name.append(args[i]).append(" ");
             Generator generator = null;
             name.deleteCharAt(name.length() - 1);
             for (Generator repeatGenerator : main.generators)
-                if (repeatGenerator.getName().equalsIgnoreCase(name.toString()) || repeatGenerator.getName().split(" ")[0].equalsIgnoreCase(args[1]))
+                if (repeatGenerator.getName().equalsIgnoreCase(name.toString()) || repeatGenerator.getName().split(" ")[0].equalsIgnoreCase(args[1])) {
                     generator = repeatGenerator;
+                }
             if (generator != null) {
                 PingPlayer player = main.getFileHelper().loadPlayer(event.getMember());
-                GeneratorData data = player.getGenerators().get(generator.getId());
-                long needed = (long) Math.pow(2, data.getPrestigue()-1)*100;
-                if(Long.compareUnsigned(data.getAmount(), needed) <= 0) {
-                    data.addPrestigue();
-                    data.removeAmount(-needed);
+                try {
+                    GeneratorData data = player.getGenerators().get(generator.getId());
+                    long needed = (long) Math.pow(2, data.getPrestigue()) * 100;
+                    if (Long.compareUnsigned(data.getAmount(), needed) >= 0) {
+                        data.addPrestigue();
+                        data.removeAmount(-needed);
+                        event.getChannel().sendMessage("You prestiges your " + generator.getName() + "s to prestige " + data.getPrestigue()).queue();
+                    } else
+                        event.getChannel().sendMessage("You need " + needed + " " + generator.getName() + "s to prestige your generator!").queue();
+                } catch(NullPointerException e) {
+                    event.getChannel().sendMessage("You do not have any " + generator.getName() + "s").queue();
                 }
             } else
                 event.getChannel().sendMessage("Could not find a generator with that name!").queue();

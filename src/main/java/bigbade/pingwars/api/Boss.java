@@ -33,9 +33,13 @@ public class Boss {
      * @param lost pings done
      */
     public void loseHP(Member damager, long lost) {
-        hp -= lost;
-        hp = (Long.compareUnsigned(0, hp) == 1) ? hp : 0;
-        attackers.put(damager, lost);
+        if(Long.compareUnsigned(lost, hp) == 1) {
+            hp = 0;
+            attackers.put(damager, hp);
+        } else {
+            hp -= lost;
+            attackers.put(damager, lost);
+        }
     }
 
     /**

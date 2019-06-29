@@ -20,6 +20,8 @@ public class ClaimCommand extends CommandBase {
             event.getChannel().sendMessage("You have to ping a player to target. Usage: " + main.prefix + "claim @(user)").queue();
         else {
             Member target = event.getGuild().getMemberById(args[1].replace("<@", "").replace(">", ""));
+            if(target.getUser().isBot())
+                return;
             PingPlayer redeem = main.getFileHelper().loadPlayer(event.getMember());
             PingPlayer pingTarget = main.getFileHelper().loadPlayer(target);
             PlayerGuild guild = main.getFileHelper().loadGuild(redeem.getGuild(), event.getGuild(),null, null);
@@ -50,6 +52,7 @@ public class ClaimCommand extends CommandBase {
                     long earned = (long) Math.floor(boss.getInitialHp()/10000);
                     event.getChannel().sendMessage("You have defeated the Boss! You earned " + earned + " BP!").queue();
                     redeem.addBossPoints(earned);
+                    main.getBosses().remove(target);
                 }
             } catch(NullPointerException e) {
                 if(redeem.getGuild() != null && redeem.getGuild().equals(pingTarget.getGuild()))
@@ -76,7 +79,7 @@ public class ClaimCommand extends CommandBase {
             Generator generator1 = main.generators.get(generator);
             GeneratorData data = redeem.getGenerators().get(generator1.getId());
             long beforePrestigue = (long) (Math.floor(passed / generator1.getTime()) * generator1.getPings() * data.getAmount());
-            redeemed +=  beforePrestigue + (beforePrestigue/(data.getPrestigue()/15));
+            redeemed +=  beforePrestigue + ((data.getPrestigue() == 0) ? 0 : (beforePrestigue/(data.getPrestigue()/15)));
         }
         return redeemed;
     }

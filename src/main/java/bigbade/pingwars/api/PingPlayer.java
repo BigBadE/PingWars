@@ -151,7 +151,7 @@ public class PingPlayer {
         long lastTime = utils.bytesToLong(byteData);
         Map<Byte, GeneratorData> generators = new HashMap<>();
         if (data.length != 40) {
-            int gens = (data.length - 40) / 9;
+            int gens = (data.length - 40) / 17;
             for (int i = 0; i < gens; i++) {
                 int pos = 40 + (i * 17);
                 byte id = data[pos];

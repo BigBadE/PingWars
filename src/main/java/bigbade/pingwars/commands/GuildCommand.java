@@ -52,8 +52,7 @@ public class GuildCommand extends CommandBase {
                         try {
                             int page = Integer.parseInt(args[1]);
                             page = (int) Math.min(page, Math.ceil(main.upgrades.size() / 5));
-
-                            event.getChannel().sendMessage(print(page, guild, (int) Math.ceil(main.upgrades.size()/5))).queue();
+                            event.getChannel().sendMessage(print(page*5, guild, (int) Math.ceil(main.upgrades.size()/5))).queue();
                         } catch (NumberFormatException e) {
                             if (guild.getLeader() == event.getAuthor().getIdLong()) {
                                 StringBuilder name = new StringBuilder(args[2] + " ");

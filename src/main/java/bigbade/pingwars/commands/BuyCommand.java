@@ -24,9 +24,9 @@ public class BuyCommand extends CommandBase {
         } else if (args.length >= 2) {
             try {
                 int page = Integer.parseInt(args[1]);
-                page = (int) Math.min(page, Math.ceil(pingPlayer.getGenerators().size() / 5));
+                page = (int) Math.min(page*5, Math.ceil(pingPlayer.getGenerators().size() / 5));
                 if(page == 0) page = 1;
-                event.getChannel().sendMessage(print((page-1)*5, pingPlayer, pingPlayer.getGenerators().size())).queue();
+                event.getChannel().sendMessage(print(page*5, pingPlayer, pingPlayer.getGenerators().size())).queue();
             } catch (NumberFormatException e) {
                 Generator generator = null;
                 boolean added = true;
